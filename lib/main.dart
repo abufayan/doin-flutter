@@ -18,6 +18,7 @@ void main() async {
   await getIt<MyAccountService>().initialize();
   await debugAsset();
   runApp(const DoinFx());
+  // my first commit
 }
 
 class DoinFx extends StatefulWidget {
