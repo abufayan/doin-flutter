@@ -63,11 +63,11 @@ class DoinSettingsDrawer extends StatelessWidget {
                               context.router.push(ProfileRoute());
                             },
                           ),
-                          _SettingsTile(
-                            icon: Icons.link,
-                            title: 'Earn With Us',
-                            onTap: () {},
-                          ),
+                          // _SettingsTile(
+                          //   icon: Icons.link,
+                          //   title: 'Earn With Us',
+                          //   onTap: () {},
+                          // ),
                           _SettingsTile(
                             icon: Icons.verified_outlined,
                             title: 'KYC',

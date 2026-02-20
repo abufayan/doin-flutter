@@ -5,6 +5,8 @@ sealed class ChangePasswordState {}
 
 final class ChangePasswordInitial extends ChangePasswordState {}
 
+final class ActionState extends ChangePasswordState {}
+
 final class ChangePasswordLoading extends ChangePasswordState {}
 
 final class ChangePasswordSuccess extends ChangePasswordState {
@@ -13,7 +15,14 @@ final class ChangePasswordSuccess extends ChangePasswordState {
   ChangePasswordSuccess({required this.message});
 }
 
-final class ChangePasswordError extends ChangePasswordState {
+final class ChangePasswordLoaded extends ChangePasswordState {
+  final ContactData contactData;
+
+  ChangePasswordLoaded({required this.contactData});
+}
+
+
+final class ChangePasswordError extends ActionState {
   final String message;
 
   ChangePasswordError({required this.message});

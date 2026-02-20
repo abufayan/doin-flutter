@@ -102,21 +102,29 @@ class _DepositHistoryView extends StatelessWidget {
           }
 
           if (state is DepositHistoryLoaded) {
-            return RefreshIndicator(
-              onRefresh: () async {
-                context.read<DepositHistoryBloc>().add(
-                  LoadDepositHistory(showLoading: false),
-                );
-                // Wait a bit for the refresh to complete
-                await Future.delayed(const Duration(milliseconds: 500));
-              },
-              child: ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: state.deposits.length,
-                itemBuilder: (context, index) {
-                  return _DepositHistoryCard(deposit: state.deposits[index]);
-                },
-              ),
+            return Column(
+              children: [
+                const _DepositFilterBar(),
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      context.read<DepositHistoryBloc>().add(
+                        LoadDepositHistory(showLoading: false),
+                      );
+                      await Future.delayed(const Duration(milliseconds: 500));
+                    },
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: state.filteredDeposits.length,
+                      itemBuilder: (context, index) {
+                        return _DepositHistoryCard(
+                          deposit: state.filteredDeposits[index],
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
             );
           }
 
@@ -227,31 +235,31 @@ class _DepositHistoryCard extends StatelessWidget {
   }
 
   Widget _buildMethodIcon(String method) {
-    IconData icon;
+    String asset;
     Color color;
 
     switch (method.toLowerCase()) {
       case 'upi':
-        icon = Icons.account_balance;
+        asset = 'assets/images/deposit/upi_transaction.png';
         color = Colors.purple;
         break;
       case 'usdt':
       case 'usdt_bep20':
       case 'usdt_trc20':
       case 'usdt_erc20':
-        icon = Icons.currency_bitcoin;
+        asset = 'assets/images/deposit/usdt.png';
         color = Colors.green;
         break;
       case 'bank':
-        icon = Icons.account_balance;
+        asset = 'assets/images/deposit/bank.png';
         color = Colors.brown;
         break;
       default:
-        icon = Icons.payment;
+        asset = 'assets/images/deposit/upi_transaction.png';
         color = Colors.grey;
     }
 
-    return Icon(icon, size: 16, color: color);
+    return Image.asset('$asset', width: 24, height: 24,);
   }
 
   Widget _buildStatusBadge(String status) {
@@ -308,5 +316,110 @@ class _DepositHistoryCard extends StatelessWidget {
 
   String _formatDate(DateTime date) {
     return DateFormat('dd-MM-yyyy, hh:mm a').format(date);
+  }
+}
+
+class _DepositFilterBar extends StatefulWidget {
+  const _DepositFilterBar();
+
+  @override
+  State<_DepositFilterBar> createState() => _DepositFilterBarState();
+}
+
+class _DepositFilterBarState extends State<_DepositFilterBar> {
+  DateTimeRange? _selectedRange;
+  final TextEditingController _searchCtrl = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    final bloc = context.read<DepositHistoryBloc>();
+
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          /// 📅 DATE RANGE
+          Expanded(
+            flex: 2,
+            child: GestureDetector(
+              onTap: () async {
+                final range = await showDateRangePicker(
+                  context: context,
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime.now(),
+                );
+
+                if (range != null) {
+                  setState(() => _selectedRange = range);
+
+                  bloc.add(FilterDepositHistory(
+                    searchQuery: _searchCtrl.text,
+                    dateRange: range,
+                  ));
+                }
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 12, vertical: 12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.orange),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _selectedRange == null
+                            ? 'Select Date'
+                            : '${DateFormat('dd-MM-yyyy').format(_selectedRange!.start)}'
+                            '  to  '
+                            '${DateFormat('dd-MM-yyyy').format(_selectedRange!.end)}',
+                        style: const TextStyle(fontSize: 13),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const Icon(Icons.calendar_today,
+                        size: 18, color: Colors.orange),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(width: 12),
+
+          /// 🔎 SEARCH
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.orange),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.search, color: Colors.orange),
+                  Expanded(
+                    child: TextField(
+                      controller: _searchCtrl,
+                      decoration: const InputDecoration(
+                        hintText: 'Search',
+                        border: InputBorder.none,
+                      ),
+                      onChanged: (value) {
+                        bloc.add(FilterDepositHistory(
+                          searchQuery: value,
+                          dateRange: _selectedRange,
+                        ));
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

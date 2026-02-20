@@ -99,6 +99,12 @@ class _DoinFxState extends State<DoinFx> {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          fontFamily: 'Poppins',
+          textTheme: const TextTheme(
+            displayLarge: TextStyle(fontWeight: FontWeight.bold),
+            titleLarge: TextStyle(fontWeight: FontWeight.w600),
+            bodyMedium: TextStyle(fontWeight: FontWeight.w400),
+          ),
           useMaterial3: true,
         ),
         routerConfig: appRouter.config(navigatorObservers: () => []),

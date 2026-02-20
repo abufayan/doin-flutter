@@ -89,7 +89,7 @@ class WithdrawMethodConfig {
       title: apiData.displayName,
       currency: apiData.currency,
       minWithdrawText: 'Minimum Withdrawl: ',
-      steps: isBankTransfer ? _bankSteps : (isUpi ? _upiSteps : _usdtSteps),
+      steps: _getEffectiveSteps(type),
       iconAsset: apiData.iconAsset,
       processingTime: 'Within 24 hours',
       fees: '0%',
@@ -126,11 +126,42 @@ class WithdrawMethodConfig {
     }
   }
 
-  static const List<String> _usdtSteps = [
+  static List<String> _getEffectiveSteps(WithdrawMethodType type) {
+    if (type == WithdrawMethodType.upi) {
+      return _upiSteps;
+    } else if (type == WithdrawMethodType.usdtBep20) {
+      return _usdtBep20Steps;
+    } else if (type == WithdrawMethodType.usdtTrc20) {
+      return _usdtTrc20Steps;
+    } else if (type == WithdrawMethodType.usdtErc20) {
+      return _usdtErc20Steps;
+    } else if(type == WithdrawMethodType.bankTransfer) {
+      return _bankSteps;
+    }
+    else {
+      return [];
+    }
+  }
+
+  static const List<String> _usdtBep20Steps = [
     'Enter the amount in USD.',
-    'Enter your USDT Address.',
-    'Upload your QR Code Screenshot.',
-    'Click Withdraw and your fund will get processed.',
+    'Enter Your USDT BEP 20 Address.',
+    'Upload your USDT BEP 20 Address QR codeScreenshot',
+    'Click \'Withdraw\' and your fund wil get processed.',
+  ];
+
+  static const List<String> _usdtTrc20Steps = [
+    'Enter the amount in USD.',
+    'Enter Your USDT TRC 20 Address.',
+    'Upload your USDT TRC 20 Address QR codeScreenshot',
+    'Click \'Withdraw\' and your fund wil get processed.',
+  ];
+
+  static const List<String> _usdtErc20Steps = [
+    'Enter the amount in USD.',
+    'Enter Your USDT ERC 20 Address.',
+    'Upload your USDT ERC 20 Address QR codeScreenshot',
+    'Click \'Withdraw\' and your fund wil get processed.',
   ];
 
   static const List<String> _upiSteps = [

@@ -12,3 +12,13 @@ class LoadDepositHistory extends DepositHistoryEvent {
 
 /// Refresh deposit history (pull-to-refresh)
 class RefreshDepositHistory extends DepositHistoryEvent {}
+
+class FilterDepositHistory extends DepositHistoryEvent {
+  final String searchQuery;
+  final DateTimeRange? dateRange;
+
+  FilterDepositHistory({
+    this.searchQuery = '',
+    this.dateRange,
+  });
+}

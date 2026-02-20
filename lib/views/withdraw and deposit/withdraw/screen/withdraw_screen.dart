@@ -240,7 +240,6 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                 /// Steps
                 StepsCard(
                   config.steps,
-                  onClose: () {},
                   withDraw: isWithDraw(config.type),
                 ),
 

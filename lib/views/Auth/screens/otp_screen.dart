@@ -1,6 +1,7 @@
 import 'package:doin_fx/core/widgets/app_loaders.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:doin_fx/core/routes/app_router.dart';
+import 'package:doin_fx/widgets/doin_design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -75,76 +76,35 @@ class _OtpPageState extends State<OtpPage> {
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
+                crossAxisAlignment: .start,
                 children: [
                   const SizedBox(height: 40),
-                  Column(
-                    children: [
-                      Container(
-                        height: 52,
-                        width: 52,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFFF9800),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Center(
-                          child: Text(
-                            'D',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 26,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Doin',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFFFF9800),
-                        ),
-                      ),
-                      const Text(
-                        'Mobi 1.0',
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
-                      ),
-                    ],
-                  ),
+                 DoinDesign(),
                   const SizedBox(height: 32),
-                  RichText(
-                    text: const TextSpan(
-                      style: TextStyle(fontSize: 22),
-                      children: [
-                        TextSpan(
-                          text: 'Welcome to ',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                        TextSpan(
-                          text: 'Doin FX',
-                          style: TextStyle(
-                            color: Color(0xFFFF9800),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+                  Text(
+                    'Enter Confirmation Code',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      height: 1.2,
+                      letterSpacing: -0.3,
+                      color: Colors.black,
                     ),
                   ),
                   const SizedBox(height: 40),
                   const Text(
-                    'Enter Confirmation Code',
+                    'Authentication Required',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'A 4-digit code was sent to\n${widget.email}',
+                    'A 4-digit code was sent to ${widget.email}',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: Colors.black),
+                    style: TextStyle(fontSize: 14, color: Colors.black),
                   ),
                   const SizedBox(height: 24),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: List.generate(
                       4,
                       (index) => Container(
@@ -184,40 +144,78 @@ class _OtpPageState extends State<OtpPage> {
                     ),
                   ),
                   const SizedBox(height: 32),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 46,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFFF9800),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                  Row(
+                    children: [
+                      Text(
+                        'Didn’t receive email ?',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          height: 1.2,
+                          letterSpacing: -0.3,
+                          color: Colors.black,
                         ),
                       ),
-                      // onPressed: () {},
-                      onPressed: isLoading
-                          ? null
-                          : () => context.read<AuthBloc>().add(
-                              RegisterSubmitted(
-                                // code: _otpControllers.map((c) => c.text).join(),
-                                email: widget.email,
-                                name: widget.name,
-                              ),
-                            ),
-                      child: isLoading
-                          ? AppLoaders.buttonLoader()
-                          : const Text(
-                              'Resend OTP',
-
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                    ),
+                      SizedBox(width: 5),
+                      GestureDetector(
+                        onTap: isLoading
+                            ? null
+                            : () => context.read<AuthBloc>().add(
+                          RegisterSubmitted(
+                            // code: _otpControllers.map((c) => c.text).join(),
+                            email: widget.email,
+                            name: widget.name,
+                          ),
+                        ),
+                        child: isLoading ?
+                        AppLoaders.textLoader() :
+                        Text(
+                          'Resend',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            height: 1.2,
+                            letterSpacing: -0.3,
+                            color: Colors.orange,
+                          ),
+                        ),
+                      )
+                    ],
                   ),
-                  const SizedBox(height: 16),
+                  // SizedBox(
+                  //   width: double.infinity,
+                  //   height: 46,
+                  //   child: ElevatedButton(
+                  //     style: ElevatedButton.styleFrom(
+                  //       backgroundColor: const Color(0xFFFF9800),
+                  //       shape: RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.circular(8),
+                  //       ),
+                  //     ),
+                  //     // onPressed: () {},
+                  //     onPressed: isLoading
+                  //         ? null
+                  //         : () => context.read<AuthBloc>().add(
+                  //             RegisterSubmitted(
+                  //               // code: _otpControllers.map((c) => c.text).join(),
+                  //               email: widget.email,
+                  //               name: widget.name,
+                  //             ),
+                  //           ),
+                  //     child: isLoading
+                  //         ? AppLoaders.buttonLoader()
+                  //         : const Text(
+                  //             'Resend OTP',
+                  //
+                  //             style: TextStyle(
+                  //               fontSize: 15,
+                  //               fontWeight: FontWeight.w600,
+                  //               color: Colors.white,
+                  //             ),
+                  //           ),
+                  //   ),
+                  // ),
+                  const SizedBox(height: 380),
                   SizedBox(
                     width: double.infinity,
                     height: 46,

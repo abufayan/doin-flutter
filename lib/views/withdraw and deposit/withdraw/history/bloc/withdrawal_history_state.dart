@@ -8,10 +8,12 @@ class WithdrawalHistoryInitial extends WithdrawalHistoryState {}
 class WithdrawalHistoryLoading extends WithdrawalHistoryState {}
 
 class WithdrawalHistoryLoaded extends WithdrawalHistoryState {
-  final List<WithdrawalHistoryItem> withdrawals;
+  final List<WithdrawalHistoryItem> withdrawals;          // original
+  final List<WithdrawalHistoryItem> filteredWithdrawals;  // filtered
 
   WithdrawalHistoryLoaded({
     required this.withdrawals,
+    required this.filteredWithdrawals,
   });
 }
 

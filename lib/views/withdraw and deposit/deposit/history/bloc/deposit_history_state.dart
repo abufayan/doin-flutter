@@ -8,11 +8,13 @@ class DepositHistoryInitial extends DepositHistoryState {}
 class DepositHistoryLoading extends DepositHistoryState {}
 
 class DepositHistoryLoaded extends DepositHistoryState {
-  final List<DepositHistoryItem> deposits;
+  final List<DepositHistoryItem> deposits;          // original list
+  final List<DepositHistoryItem> filteredDeposits;  // filtered list
   final double totalAmount;
 
   DepositHistoryLoaded({
     required this.deposits,
+    required this.filteredDeposits,
     required this.totalAmount,
   });
 }
@@ -24,3 +26,5 @@ class DepositHistoryError extends DepositHistoryState {
 }
 
 class DepositHistoryEmpty extends DepositHistoryState {}
+
+

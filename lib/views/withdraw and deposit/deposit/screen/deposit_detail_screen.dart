@@ -251,9 +251,6 @@ class _DepositDetailScreenState extends State<DepositDetailScreen> {
                   /// Steps
                   StepsCard(
                     config.steps,
-                    onClose: () {
-                      // optional: hide card or pop modal
-                    },
                   ),
 
                   NoteCard(config.note),

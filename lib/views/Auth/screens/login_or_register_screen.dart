@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:doin_fx/core/routes/app_router.dart';
+import 'package:doin_fx/widgets/doin_design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/auth_bloc.dart';
@@ -61,45 +62,12 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Spacer(),
-                  Column(
-                    children: [
-                      Container(
-                        height: 56,
-                        width: 56,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFFF9800),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Center(
-                          child: Text(
-                            'D',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Doin',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFFFF9800),
-                        ),
-                      ),
-                      const Text(
-                        'Mobi 1.0',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 100),
+                    child: DoinDesign(),
                   ),
                   const SizedBox(height: 48),
                   RichText(
