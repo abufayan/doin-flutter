@@ -35,9 +35,14 @@ class ClosedOrdersBloc extends Bloc<ClosedOrdersEvent, ClosedOrdersState> {
           ? baseUrl + demoGetTrades
           : baseUrl + getTrades;
 
+      // Determine status based on event type
+      final status = event.type == ClosedOrderTypes.showAll
+          ? 'completed_cancelled'
+          : 'completed_cancelled_24_hr';
+
       final params = {
         'user_id': getIt<MyAccountService>().user?.userId,
-        'status': 'completed_cancelled_24_hr',
+        'status': status,
       };
 
       final response = await dio.get(url, queryParameters: params);
@@ -48,7 +53,7 @@ class ClosedOrdersBloc extends Bloc<ClosedOrdersEvent, ClosedOrdersState> {
         emit(Error(message: parsed.message));
         return;
       }
-      emit(ClosedOrdersLoaded(orders: parsed.data)); 
+      emit(ClosedOrdersLoaded(orders: parsed.data, filterType: event.type)); 
 
       // emit(_buildLoadedState(orders: parsed.data));
     } on DioException catch (e) {

@@ -263,7 +263,7 @@ class _HomeViewState extends State<_HomeView> {
                     }
 
                     if (i == 1) {
-                      context.read<FavouritesBloc>().add(LoadFavouritesEvent());
+                      context.read<FavouritesBloc>().add(LoadFavouritesEvent()); 
                     }
 
                     if (i == 0) {
