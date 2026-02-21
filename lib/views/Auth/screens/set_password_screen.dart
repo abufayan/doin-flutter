@@ -93,30 +93,19 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
                   const SizedBox(height: 32),
 
                   /// Logo
-                  DoinDesign(),
+                  Row(mainAxisAlignment: .center, children: [DoinDesign()]),
 
                   const SizedBox(height: 32),
 
-                  Center(
-                    child: RichText(
-                      text: const TextSpan(
-                        text: 'Welcome to ',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: 'Doin FX',
-                            style: TextStyle(
-                              color: Color(0xFFFF9F1D),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
+                  Text(
+                    'Let’s secure your account!',
+                    style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w600,
+                        height: 1.2,
+                        letterSpacing: -0.3,
+                        color: Colors.black,
                       ),
-                    ),
                   ),
 
                   const SizedBox(height: 40),
@@ -125,7 +114,11 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
                     'Set Password',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                   ),
-                  const SizedBox(height: 16),
+                  const Text(
+                    'Choose a strong password to protect your account.',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w300),
+                  ),
+                  const SizedBox(height: 50),
                   /// Password
                   PasswordField(
                     'Password',
@@ -159,7 +152,7 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
                     isValid: _specialCharValid,
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 25),
 
                   /// Confirm password
                   PasswordField(

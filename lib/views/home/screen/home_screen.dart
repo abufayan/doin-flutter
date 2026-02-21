@@ -66,7 +66,7 @@ class _HomeViewState extends State<_HomeView> {
       child: BlocConsumer<HomeBloc, HomeState>(
         listener: (BuildContext context, HomeState state) {
           // Show snackbar on account switch
-          if (state is AccountSwitched) {
+          if (state is AccountSwitched) { 
             if (state.errorMessage != null) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -602,7 +602,7 @@ class _PremiumBottomNavBar extends StatelessWidget {
                                       scale: isActive ? 1.15 : 1.0,
                                       child: Image.asset(
                                         item.assetPath,
-                                        width: 22,
+                                        width: 22, 
                                         height: 22,
                                         color: isActive
                                             ? const Color(0xFFFF8C00)
@@ -618,13 +618,12 @@ class _PremiumBottomNavBar extends StatelessWidget {
                                       ),
                                       style: TextStyle(
                                         fontSize: 11,
-                                        fontWeight: isActive
-                                            ? FontWeight.w700
-                                            : FontWeight.w500,
-                                        color: isActive
+                                        fontWeight: FontWeight.w700,
+                                        color: isActive 
                                             ? const Color(0xFFFF8C00)
                                             : Colors.black54,
                                         letterSpacing: isActive ? 0.3 : 0,
+                                        fontFamily: 'Poppins'
                                       ),
                                       child: Text(item.label),
                                     ),

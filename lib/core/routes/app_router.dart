@@ -27,7 +27,7 @@ import 'package:doin_fx/views/splash/screen/splash_screen.dart';
 import 'package:doin_fx/views/trade/ui/trade_page.dart';
 import 'package:doin_fx/views/withdraw%20and%20deposit/deposit/datamodel/doposit_model.dart';
 import 'package:doin_fx/views/withdraw%20and%20deposit/deposit/screen/deposit_detail_screen.dart';
-import 'package:doin_fx/views/withdraw%20and%20deposit/deposit/screen/payment_methods_screen.dart';
+import 'package:doin_fx/views/withdraw%20and%20deposit/deposit/screen/deposit_methods_screen.dart';
 import 'package:doin_fx/views/withdraw%20and%20deposit/deposit/history/screen/deposit_history_screen.dart';
 import 'package:doin_fx/views/withdraw%20and%20deposit/withdraw/datamodel/withdraw_model.dart';
 import 'package:doin_fx/views/withdraw%20and%20deposit/withdraw/screen/withdraw_methods_screen.dart';

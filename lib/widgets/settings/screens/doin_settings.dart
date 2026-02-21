@@ -78,6 +78,7 @@ class DoinSettingsDrawer extends StatelessWidget {
                           _SettingsTile(
                             icon: Icons.key_outlined,
                             title: 'Change Password',
+                            size: 15.8,
                             onTap: () {
                               context.router.push(ChangePasswordRoute());
                             },
@@ -164,10 +165,12 @@ class DoinSettingsDrawer extends StatelessWidget {
                             ),
                             SizedBox(height: 12),
                             _AccountRow(label: 'Account', value: 'SPEARD'),
+                            SizedBox(height: 8),
                             _AccountRow(label: 'SWAP', value: 'ZERO'),
                             SizedBox(height: 8),
                             _AccountRow(label: 'Commission', value: 'ZERO'),
-                            _AccountRow(label: 'Leverage', value: '1:100'),
+                            SizedBox(height: 8),
+                            _AccountRow(label: 'Leverage', value: 'upto -> 1:2000'), 
                           ],
                         ),
                       ),
@@ -239,18 +242,23 @@ class _SettingsCard extends StatelessWidget {
 class _SettingsTile extends StatelessWidget {
   final IconData icon;
   final String title;
+  final double? size;
   final VoidCallback? onTap;
 
-  const _SettingsTile({required this.icon, required this.title, this.onTap});
+  const _SettingsTile({required this.icon, required this.title, this.onTap, this.size });
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       leading: Icon(icon),
-      title: Text(title),
+      title: Text(
+        title, 
+        style: size != null ? TextStyle(fontSize: size) : null
+      ),
       trailing: const Icon(Icons.chevron_right),
       onTap: onTap,
       enabled: onTap != null,
+      style: ListTileStyle.drawer,
     );
   }
 }

@@ -61,8 +61,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 40),
-                  Center(
-                    child: DoinDesign(),
+                  Row(
+                    mainAxisAlignment: .center,
+                    children: [
+                      DoinDesign(),
+                    ],
                   ),
                   const SizedBox(height: 32),
                   Text(

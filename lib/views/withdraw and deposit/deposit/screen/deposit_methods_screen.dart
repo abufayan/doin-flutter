@@ -1,9 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:doin_fx/core/routes/app_router.dart';
 import 'package:doin_fx/views/withdraw%20and%20deposit/deposit/datamodel/doposit_model.dart';
-import 'package:doin_fx/views/withdraw%20and%20deposit/CommonData/payment_method_model.dart';
 import 'package:doin_fx/views/withdraw%20and%20deposit/deposit/methods/bloc/deposit_methods_bloc.dart';
-import 'package:doin_fx/views/withdraw%20and%20deposit/deposit/screen/payment_method_card.dart';
+import 'package:doin_fx/views/withdraw%20and%20deposit/deposit/screen/deposit_method_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -12,11 +11,11 @@ class DepositMethodsScreen extends StatelessWidget {
   const DepositMethodsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) { 
     return BlocProvider(
       create: (_) => DepositMethodsBloc()..add(LoadDepositMethods()),
       child: const _DepositMethodsView(),
-    );
+    ); 
   }
 }
 

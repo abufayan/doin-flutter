@@ -56,6 +56,7 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen> {
         }
       },
       builder: (context, state) {
+
         return Scaffold(
           backgroundColor: Colors.white,
           body: SafeArea(
@@ -65,9 +66,11 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Spacer(),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 100),
-                    child: DoinDesign(),
+                  Row(
+                    mainAxisAlignment: .center,
+                    children: [
+                      DoinDesign()
+                    ],
                   ),
                   const SizedBox(height: 48),
                   RichText(
@@ -113,16 +116,25 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen> {
                   const Spacer(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: const [
-                      Icon(Icons.star, color: Colors.orange, size: 14),
+                      Padding(
+                        padding: EdgeInsets.only(top: 2), // fine tune 1–3 if needed
+                        child: Icon(
+                          Icons.star,
+                          color: Colors.orange,
+                          size: 14,
+                        ),
+                      ),
                       SizedBox(width: 6),
-                      Flexible(
+                      Expanded(
                         child: Text(
                           'Trusted by traders focused on growing their wealth with confidence.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 11,
                             color: Colors.grey,
+                            height: 1.4,
                           ),
                         ),
                       ),
