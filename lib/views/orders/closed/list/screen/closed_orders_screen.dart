@@ -1,3 +1,4 @@
+import 'package:doin_fx/core/enums.dart';
 import 'package:doin_fx/core/locator.dart';
 import 'package:doin_fx/core/services/accountServices/my_account_service.dart';
 import 'package:doin_fx/core/utils/symbol_icon_resolver.dart';
@@ -16,100 +17,252 @@ class ClosedOrdersScreen extends StatefulWidget {
   State<ClosedOrdersScreen> createState() => _ClosedOrdersScreenState();
 }
 
-class _ClosedOrdersScreenState extends State<ClosedOrdersScreen> {
+class _ClosedOrdersScreenState extends State<ClosedOrdersScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  late final TextEditingController _searchController;
+  String _searchQuery = '';
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+
+    // Trigger initial load on the globally provided bloc
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ClosedOrdersBloc>().add(LoadClosedOrders());
+    });
+    _searchController = TextEditingController();
+    _searchController.addListener(() {
+      setState(() {
+        _searchQuery = _searchController.text.trim();
+      });
+    });
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    )..repeat(reverse: true);
+
+    _animation = Tween<double>(
+      begin: 0,
+      end: 6,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ClosedOrdersBloc()..add(LoadClosedOrders()),
-      // ..add(ConnectSocket()),
-      child: Builder(
-        builder: (innerContext) {
-          return Scaffold(
-            backgroundColor: Colors.white,
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // InkWell(
-                //   child: _BalanceRow(),
-                //   onTap: () {
-                //     // showModalBottomSheet(
-                //     //   context: innerContext, // ✅ CORRECT CONTEXT
-                //     //   backgroundColor: Colors.transparent,
-                //     //   isScrollControlled: true,
-                //     //   builder: (_) {
-                //     //     return BlocProvider.value(
-                //     //       value: innerContext.read<PendingOrderBloc>(),
-                //     //       child: const AccountSummarySheet(),
-                //     //     );
-                //     //   },
-                //     // );
-                //   },
-                // ),
-                Expanded(
-                  child: BlocBuilder<ClosedOrdersBloc, ClosedOrdersState>(
-                    builder: (context, state) {
-                      if (state is Loading) {
-                        return AppLoaders.listShimmer();
-                      }
+    return Builder(
+      builder: (innerContext) {
+        final bloc = innerContext.read<ClosedOrdersBloc>();
+        return Scaffold(
+          floatingActionButton: Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: AnimatedBuilder(
+              animation: _animation,
+              builder: (context, child) {
+                return Transform.translate(
+                  offset: Offset(0, -_animation.value),
+                  child: child,
+                );
+              },
+              child: BlocBuilder<ClosedOrdersBloc, ClosedOrdersState>(
+                builder: (context, state) {
+                  final currentType = state is ClosedOrdersLoaded
+                      ? state.filterType
+                      : ClosedOrderTypes.last24hrs;
+                  final isShowAll = currentType != ClosedOrderTypes.showAll;
+                  final label = isShowAll ? 'Show All' : 'Last 24 Hrs';
+                  final nextType = isShowAll
+                      ? ClosedOrderTypes.showAll
+                      : ClosedOrderTypes.last24hrs;
 
-                      if (state is ClosedOrdersLoaded) {
-                        if (state.orders.isEmpty) {
-                          return RefreshIndicator(
-                            onRefresh: () async {
-                              context.read<ClosedOrdersBloc>().add(
-                                LoadClosedOrders(),
+                  return GestureDetector(
+                    onTap: () {
+                      bloc.add(LoadClosedOrders(type: nextType));
+                    },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          label,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFFFF9800),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        const Icon(
+                          Icons.keyboard_arrow_down,
+                          size: 18,
+                          color: Color(0xFFFF9800),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
+          backgroundColor: Colors.white,
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // InkWell(
+              //   child: _BalanceRow(),
+              //   onTap: () {
+              //     // showModalBottomSheet(
+              //     //   context: innerContext, // ✅ CORRECT CONTEXT
+              //     //   backgroundColor: Colors.transparent,
+              //     //   isScrollControlled: true,
+              //     //   builder: (_) {
+              //     //     return BlocProvider.value(
+              //     //       value: innerContext.read<PendingOrderBloc>(),
+              //     //       child: const AccountSummarySheet(),
+              //     //     );
+              //     //   },
+              //     // );
+              //   },
+              // ),
+              Expanded(
+                child: BlocBuilder<ClosedOrdersBloc, ClosedOrdersState>(
+                  builder: (context, state) {
+                    if (state is Loading) {
+                      return AppLoaders.listShimmer();
+                    }
+
+                    if (state is ClosedOrdersLoaded) {
+                      final isShowAll =
+                          state.filterType == ClosedOrderTypes.showAll;
+                      final filteredOrders =
+                          isShowAll && _searchQuery.isNotEmpty
+                          ? state.orders.where((o) {
+                              final q = _searchQuery.toLowerCase().replaceAll(
+                                '/',
+                                '',
                               );
-                            },
-                            child: ListView(
-                              physics: const AlwaysScrollableScrollPhysics(),
-                              children: const [
-                                SizedBox(height: 200),
-                                Center(child: Text('No Closed orders')),
-                              ],
-                            ),
-                          );
-                        }
+                              final s = o.symbol.toLowerCase().replaceAll(
+                                '/',
+                                '',
+                              );
+                              return s.contains(q) ||
+                                  o.tradeId.toString().contains(q) ||
+                                  o.type.toLowerCase().contains(q);
+                            }).toList()
+                          : state.orders;
 
+                      if (state.orders.isEmpty) {
                         return RefreshIndicator(
                           onRefresh: () async {
-                            context.read<ClosedOrdersBloc>().add(
-                              LoadClosedOrders(),
-                            );
+                            final bloc = context.read<ClosedOrdersBloc>();
+                            final type = state.filterType;
+                            bloc.add(LoadClosedOrders(type: type));
                           },
-                          child: ListView.builder(
-                            itemCount: state.orders.length,
-                            itemBuilder: (context, i) {
-                              return ClosedOrderRow(order: state.orders[i]);
-                            },
+                          child: ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            children: [
+                              _ClosedOrdersInfoBanner(
+                                filterType: state.filterType,
+                              ),
+                              if (isShowAll)
+                                _buildSearchBar(
+                                  _searchController,
+                                  _searchQuery,
+                                ),
+                              if (isShowAll) _csvDownloadButton(),
+                              const SizedBox(height: 200),
+                              const Center(child: Text('No Closed orders')),
+                            ],
                           ),
                         );
                       }
 
-                      if (state is Error) {
-                        return Center(
-                          child: Text(
-                            state.message,
-                            style: const TextStyle(color: Colors.red),
+                      if (filteredOrders.isEmpty) {
+                        return RefreshIndicator(
+                          onRefresh: () async {
+                            final bloc = context.read<ClosedOrdersBloc>();
+                            final type = state.filterType;
+                            bloc.add(LoadClosedOrders(type: type));
+                          },
+                          child: ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            children: [
+                              _ClosedOrdersInfoBanner(
+                                filterType: state.filterType,
+                              ),
+                              if (isShowAll)
+                                _buildSearchBar(
+                                  _searchController,
+                                  _searchQuery,
+                                ),
+                              if (isShowAll) _csvDownloadButton(),
+                              const SizedBox(height: 200),
+                              const Center(child: Text('No results')),
+                            ],
                           ),
                         );
                       }
 
-                      // Initial / fallback
-                      return const SizedBox.shrink();
-                    },
-                  ),
+                      final headerCount = 1 + (isShowAll ? 2 : 0);
+
+                      return RefreshIndicator(
+                        onRefresh: () async {
+                          final bloc = context.read<ClosedOrdersBloc>();
+                          final type = state.filterType;
+                          bloc.add(LoadClosedOrders(type: type));
+                        },
+                        child: ListView.builder(
+                          itemCount: filteredOrders.length + headerCount,
+                          itemBuilder: (context, i) {
+                            if (i == 0) {
+                              return _ClosedOrdersInfoBanner(
+                                filterType: state.filterType,
+                              );
+                            }
+                            if (isShowAll && i == 1) {
+                              return _buildSearchBar(
+                                _searchController,
+                                _searchQuery,
+                              );
+                            }
+                            if (isShowAll && i == 2) {
+                              return _csvDownloadButton();
+                            }
+                            final order = filteredOrders[i - headerCount];
+                            return ClosedOrderRow(order: order);
+                          },
+                        ),
+                      );
+                    }
+
+                    if (state is Error) {
+                      return Center(
+                        child: Text(
+                          state.message,
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      );
+                    }
+
+                    // Initial / fallback
+                    return const SizedBox.shrink();
+                  },
                 ),
-              ],
-            ),
-          );
-        },
-      ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -224,7 +377,7 @@ class ClosedOrderRow extends StatelessWidget {
       leading: buildSymbolIcon(order.symbol, size: 35),
 
       title: Text(
-        order.symbol,
+        order.symbol.replaceAll('/', ''),
         style: const TextStyle(fontWeight: FontWeight.w600),
       ),
 
@@ -260,7 +413,7 @@ class ClosedOrderRow extends StatelessWidget {
           //     fontWeight: FontWeight.bold,
           //   ),
           // ),
-            Text(
+          Text(
             _formatDate(order.exitTime!),
             style: TextStyle(
               fontSize: 10.5,
@@ -269,6 +422,41 @@ class ClosedOrderRow extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ClosedOrdersInfoBanner extends StatelessWidget {
+  final ClosedOrderTypes filterType;
+
+  const _ClosedOrdersInfoBanner({required this.filterType});
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isShowAll = filterType == ClosedOrderTypes.showAll;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF2F2F2),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Center(
+          child: Text(
+            isShowAll
+                ? 'Showing all closed positions'
+                : 'Showing closed positions for the last 24 hours',
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 12,
+              color: Colors.black54,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -394,6 +582,129 @@ String _formatDate(DateTime date) {
       '${date.hour.toString().padLeft(2, '0')}:'
       '${date.minute.toString().padLeft(2, '0')}:'
       '${date.second.toString().padLeft(2, '0')}';
+}
+
+Widget _buildSearchBar(TextEditingController controller, String query) {
+  return Padding(
+    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+    child: Container(
+      height: 48,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFFF9800).withOpacity(0.25)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          hintText: 'Search symbol or ID',
+          hintStyle: TextStyle(
+            color: Colors.grey.shade500,
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+          ),
+          prefixIcon: Container(
+            margin: const EdgeInsets.only(left: 12, right: 8),
+            child: const Icon(Icons.search, size: 22, color: Color(0xFFFF9800)),
+          ),
+          suffixIcon: query.isNotEmpty
+              ? Container(
+                  margin: const EdgeInsets.only(right: 4),
+                  child: IconButton(
+                    icon: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.close,
+                        size: 14,
+                        color: Colors.black54,
+                      ),
+                    ),
+                    onPressed: () {
+                      controller.clear();
+                    },
+                  ),
+                )
+              : null,
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 14,
+            horizontal: 8,
+          ),
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+        ),
+        style: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: Colors.black87,
+        ),
+      ),
+    ),
+  );
+}
+
+Widget _csvDownloadButton() {
+  return Padding(
+    padding: const EdgeInsets.fromLTRB(16, 6, 16, 10),
+    child: Container(
+      height: 48,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFFF9800).withOpacity(0.25)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Center(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: const Color(0xFFFF9800),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.download_rounded,
+                  size: 18,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            const Text(
+              'Download CSV',
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w600,
+                fontSize: 15,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
 
 Widget closedOrderHeader(TradeOrder order) {

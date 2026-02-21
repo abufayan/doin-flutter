@@ -9,8 +9,9 @@ final class Loading extends ClosedOrdersState {}
 
 final class ClosedOrdersLoaded extends ClosedOrdersState {
   final List<TradeOrder> orders;
+  final ClosedOrderTypes filterType;
 
-  ClosedOrdersLoaded({required this.orders});
+  ClosedOrdersLoaded({required this.orders, this.filterType = ClosedOrderTypes.last24hrs});
 
 }
 

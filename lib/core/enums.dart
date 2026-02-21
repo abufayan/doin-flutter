@@ -6,6 +6,8 @@ enum TradeSide { buy, sell }
 
 enum OrderType { market, limit, advanced }
 
+enum ClosedOrderTypes {last24hrs, showAll}
+
 enum DepositMethodType {
   upi,
   usdtBep20,
