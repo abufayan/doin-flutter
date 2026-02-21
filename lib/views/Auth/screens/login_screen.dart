@@ -83,9 +83,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(height: 40),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 95.0),
-                    child: Align(alignment: Alignment.center, child: DoinDesign()),
+                  Row( 
+                    mainAxisAlignment: .center,
+                    children: [
+                      DoinDesign(),
+                    ],
                   ),
                   const SizedBox(height: 100),
                   Align(

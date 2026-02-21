@@ -18,6 +18,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  bool _agreedToMarketing = false;
   final nameCtrl = TextEditingController();
   final emailCtrl = TextEditingController();
 
@@ -67,9 +68,11 @@ class _RegisterPageState extends State<RegisterPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 40),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 95.0),
-                    child: DoinDesign(),
+                  Row(
+                    mainAxisAlignment: .center,
+                    children: [
+                      DoinDesign(),
+                    ],
                   ),
                   const SizedBox(height: 60),
                   Padding(
@@ -156,7 +159,38 @@ class _RegisterPageState extends State<RegisterPage> {
                   //     ),
                   //   ),
                   // ),
-                  const SizedBox(height: 300),
+                  const SizedBox(height: 100),
+
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 2), // adjust 1–3 if needed
+                        child: Checkbox(
+                          value: _agreedToMarketing,
+                          activeColor: const Color(0xFFFF9800),
+                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          visualDensity: VisualDensity.compact,
+                          onChanged: (value) {
+                            setState(() {
+                              _agreedToMarketing = value ?? false;
+                            });
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          'I agree to receive marketing communications and allow the use of my personal data for marketing optimization and personalized advertising. I understand that I can withdraw my consent at any time.',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            height: 1.5,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 50),
                   SizedBox(
                     width: double.infinity,
                     height: 48,
@@ -167,7 +201,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      onPressed: isLoading
+                      onPressed: isLoading || !_agreedToMarketing
                           ? null
                           : () => context.read<AuthBloc>().add(
                               RegisterSubmitted(
@@ -188,6 +222,13 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                   const SizedBox(height: 30),
+                  Text(
+                    'By registering, I confirm that I have read, understood, and accepted the Company’s Legal Documents and Privacy Policy. I also acknowledge that I may receive newsletters, company updates, and product-related communications.',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      height: 1.5,
+                    ),
+                  ),
                 ],
               ),
             ),

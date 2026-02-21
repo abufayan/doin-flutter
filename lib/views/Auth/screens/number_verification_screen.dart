@@ -5,6 +5,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:doin_fx/core/routes/app_router.dart';
 import 'package:doin_fx/views/auth/bloc/auth_bloc.dart';
 import 'package:doin_fx/views/orders/helper/show_snackbar.dart';
+import 'package:doin_fx/widgets/doin_design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
@@ -19,7 +20,8 @@ class WhatsAppNumberScreen extends StatefulWidget {
 
 class _WhatsAppNumberScreenState extends State<WhatsAppNumberScreen> {
   final TextEditingController _phoneController = TextEditingController();
-  bool _isAgreed = true;
+  bool _isAgreed = false;
+  bool _numberValidated = false;
 
   @override
   void dispose() {
@@ -63,23 +65,46 @@ class _WhatsAppNumberScreenState extends State<WhatsAppNumberScreen> {
       },
       builder: (context, state) {
         return Scaffold(
+          // appBar: AppBar(
+          //   backgroundColor: Colors.white,
+          //   centerTitle: true,
+          //   title: DoinDesign(),
+          // ),
           backgroundColor: Colors.white,
           body: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
-                  const SizedBox(height: 80),
+                   Row(
+                    mainAxisAlignment: .center,
+                    children: [
+                      DoinDesign(),
+                    ],
+                  ),
+                  const SizedBox(height: 0),
                   const Text(
-                    'WhatsApp Number',
+                    'Stay connected on WhatsApp',
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black, 
+                    ),
+                  ),
+                  SizedBox(height: 20),
+
+                  const Text(
+                    'Enter your WhatsApp number',
+                    style: TextStyle(
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
                   ),
                   const SizedBox(height: 8),
+                  Text('Make sure this number is active on WhatsApp.'),
+                  const SizedBox(height: 40),
                   IntlPhoneField(
                     key: const ValueKey('whatsapp_phone_field'),
                     autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -89,16 +114,21 @@ class _WhatsAppNumberScreenState extends State<WhatsAppNumberScreen> {
                     languageCode: "en",
 
                     validator: (phone) {
-                      if (phone == null || phone.number.isEmpty) {
+                      if (phone == null || phone.number.isEmpty) { 
+                        
+                        
+                        setState(() => _numberValidated = false);
                         return 'Phone number is required';
                       }
 
                       // India mobile numbers must be exactly 10 digits
-                      if (phone.countryISOCode == 'IN' &&
-                          phone.number.length != 10) {
-                        return 'Enter a valid 10-digit mobile number';
+                      if (phone.countryISOCode == 'IN' && phone.number.length != 10) {
+
+                            setState(() => _numberValidated = false);
+                            return 'Enter a valid 10-digit mobile number';
                       }
 
+                      setState(() => _numberValidated = true);
                       return null;
                     },
 
@@ -106,7 +136,7 @@ class _WhatsAppNumberScreenState extends State<WhatsAppNumberScreen> {
                       hintText: 'Enter phone number',
                       border: OutlineInputBorder(
                         borderSide: const BorderSide(color: Colors.black),
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderSide: const BorderSide(
@@ -136,8 +166,8 @@ class _WhatsAppNumberScreenState extends State<WhatsAppNumberScreen> {
                   Row(
                     children: [
                       SizedBox(
-                        height: 24,
-                        width: 24,
+                        height: 18,
+                        width: 18,
                         child: Checkbox(
                           value: _isAgreed,
                           activeColor: Colors.black,
@@ -152,28 +182,28 @@ class _WhatsAppNumberScreenState extends State<WhatsAppNumberScreen> {
                       const SizedBox(width: 12),
                       const Text(
                         'I agree to the ',
-                        style: TextStyle(fontSize: 15),
+                        style: TextStyle(fontSize: 12),
                       ),
                       const Text(
                         'Terms & Conditions',
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 12,
                           color: Color(0xFFF7941D),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 400),
                   SizedBox(
                     width: double.infinity,
                     height: 55,
                     child: ElevatedButton(
-                      onPressed: state is AuthLoading
+                      onPressed: state is AuthLoading || (!_isAgreed || !_numberValidated)
                           ? null
-                          : () {
-                              if (!_isAgreed) return;
-                              context.read<AuthBloc>().add(
+                          : () { 
+                              // if (!_isAgreed) return;
+                              context.read<AuthBloc>().add( 
                                 WhatsAppNumberSubmitted(
                                   whatsappNumber: _phoneController.text,
                                 ),
@@ -184,9 +214,9 @@ class _WhatsAppNumberScreenState extends State<WhatsAppNumberScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        elevation: 0,
+                        elevation: 0, 
                       ),
-                      child: state is AuthLoading
+                      child: state is AuthLoading 
                           ? AppLoaders.buttonLoader()
                           : const Text(
                               'Continue',

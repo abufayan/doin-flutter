@@ -279,6 +279,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
         return;
       }
+    }  on DioException catch (e) {
+      final data = e.response?.data;
+      String errorMessage = 'Registration failed';
+      if (data is Map<String, dynamic>) {
+        errorMessage = data['message'] ?? data['error'] ?? 'Registration failed';
+      }
+      emit(AuthFailure(error: 'REQUEST_FAILED', message: errorMessage, registerData: state.registerData));
     } catch (error) {
       emit(
         AuthFailure(

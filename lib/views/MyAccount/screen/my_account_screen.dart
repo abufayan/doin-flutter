@@ -49,14 +49,15 @@ class _MyAccountState extends State<MyAccount> {
         }
 
         if (state is MyAccountDataLoaded) {
-          return RefreshIndicator(
-            onRefresh: () async {
-              context.read<MyAccountBloc>().add(LoadMyAccount());
-            },
-            child: Scaffold(
-              backgroundColor: Colors.white,
-              body: SafeArea(
+          return Scaffold(
+            backgroundColor: Colors.white,
+            body: SafeArea(
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  context.read<MyAccountBloc>().add(LoadMyAccount());
+                },
                 child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,7 +125,7 @@ class _UserInfoCard extends StatelessWidget {
                 ),
                 Text(
                   kycVerified ? 'Verified' : 'Not Verified',
-                  style: const TextStyle(
+                  style: const TextStyle( 
                     color: Colors.orange,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,

@@ -2,6 +2,7 @@ import 'package:doin_fx/core/widgets/app_loaders.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:doin_fx/core/routes/app_router.dart';
 import 'package:doin_fx/views/auth/bloc/auth_bloc.dart';
+import 'package:doin_fx/widgets/doin_design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -23,6 +24,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   bool otpVerified = false;
 
   bool obscure = true;
+  bool obscureConfirm = true;
 
   @override
   Widget build(BuildContext context) {
@@ -57,10 +59,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         final loading = state is AuthLoading;
 
         return Scaffold(
-          appBar: AppBar(
-            leading: const BackButton(),
-            title: const Text('Doin FX'),
-          ),
+         
           body: SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -70,6 +69,16 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+
+                    Row(
+                    mainAxisAlignment: .center,
+                    children: [
+                      DoinDesign(),
+                    ],
+                  ),
+
+                  SizedBox(height: 25,),
+
                     const Text(
                       'Set a new account password',
                       style: TextStyle(
@@ -78,19 +87,27 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       ),
                     ),
 
-                    // const SizedBox(height: 6),
-                    // const Text(
-                    //   'Create a new password to secure your account.',
-                    //   style: TextStyle(color: Colors.grey),
-                    // ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 35),
+                    const Text(
+                      'Reset your password',
+                      style: TextStyle(
+                         fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+
+                    Text('Create a new password to secure your account.', style: TextStyle(fontWeight: .w300)),
+
+                    const SizedBox(height: 25), 
+
 
                     /// OTP
-                    const Text('Enter OTP'),
+                    const Text('Enter Your OTP', style: TextStyle(fontWeight: .bold),),
                     const SizedBox(height: 6),
                     IgnorePointer(
                       ignoring: otpVerified,
                       child: TextFormField(
+                      
                         keyboardType: TextInputType.number,
                         onSaved: (v) => _otp = v!.trim(),
                         onChanged: (v) => _otp = v.trim(),
@@ -101,7 +118,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           return null;
                         },
                         decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(15))
+                          ),
                         ),
                       ),
                     ),
@@ -149,14 +168,16 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     const SizedBox(height: 16),
 
                     /// PASSWORD
-                    const Text('Password'),
+                    const Text('Password', style: TextStyle(fontWeight: .bold),),
                     const SizedBox(height: 6),
                     TextFormField(
                       obscureText: obscure,
                       onChanged: (v) => _password = v,
                       validator: _passwordValidator,
                       decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
+                        border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(15))
+                        ),
                         suffixIcon: IconButton(
                           icon: Icon(
                             obscure ? Icons.visibility_off : Icons.visibility,
@@ -176,29 +197,43 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     const _PasswordRule('At least 1 number'),
                     const _PasswordRule('At least 1 special character'),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 30),
 
                     /// CONFIRM PASSWORD
-                    const Text('Confirm Password'),
+                    const Text(
+                      'Confirm Password',
+                      style: TextStyle(fontWeight: .bold),
+                    ),
                     const SizedBox(height: 6),
                     TextFormField(
-                      obscureText: obscure,
+                    
+                      obscureText: obscureConfirm,
                       onChanged: (v) => _confirmPassword = v,
                       validator: (v) {
                         if (v == null || v.isEmpty) {
                           return 'Confirm your password';
                         }
-                        if (v != _password) {
+                        if (v != _password) { 
                           return 'Passwords do not match';
                         }
                         return null;
                       },
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(15)) 
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            obscure ? Icons.visibility_off : Icons.visibility,
+                          ),
+                          onPressed: () {
+                            setState(() => obscureConfirm = !obscureConfirm);
+                          },
+                        ),
                       ),
                     ),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 85),
 
                     /// CONTINUE
                     SizedBox(

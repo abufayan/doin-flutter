@@ -114,9 +114,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
             await TokenStorageService.saveUser(updated);
             await getIt<MyAccountService>().initialize();
-            await getIt<MyAccountService>().updateAccountType(
-              event.accountType,
-            );
+            await getIt<MyAccountService>().updateAccountType(event.accountType);
           }
         } catch (e) {}
 

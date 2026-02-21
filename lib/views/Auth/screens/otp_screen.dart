@@ -79,7 +79,12 @@ class _OtpPageState extends State<OtpPage> {
                 crossAxisAlignment: .start,
                 children: [
                   const SizedBox(height: 40),
-                 DoinDesign(),
+                  Row(
+                    mainAxisAlignment: .center,
+                    children: [
+                      DoinDesign(),
+                    ],
+                  ),
                   const SizedBox(height: 32),
                   Text(
                     'Enter Confirmation Code',
