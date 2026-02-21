@@ -527,32 +527,26 @@ class _PremiumBottomNavBar extends StatelessWidget {
             spreadRadius: 0,
             offset: const Offset(0, -4),
           ),
-          BoxShadow(
-            color: const Color(0xFFFF8C00).withValues(alpha: 0.05),
-            blurRadius: 12,
-            spreadRadius: 0,
-            offset: const Offset(0, -2),
-          ),
         ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           // ── Top accent line ──
-          Container(
-            height: 2.5,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color(0x00FF8C00),
-                  Color(0xFFFF8C00),
-                  Color(0xFFFFA040),
-                  Color(0xFFFF8C00),
-                  Color(0x00FF8C00),
-                ],
-              ),
-            ),
-          ),
+          // Container(
+          //   height: 2.5,
+          //   decoration: const BoxDecoration(
+          //     gradient: LinearGradient(
+          //       colors: [
+          //         Color(0x00FF8C00),
+          //         Color(0xFFFF8C00),
+          //         Color(0xFFFFA040),
+          //         Color(0xFFFF8C00),
+          //         Color(0x00FF8C00),
+          //       ],
+          //     ),
+          //   ),
+          // ),
 
           // ── Navigation items ──
           SafeArea(

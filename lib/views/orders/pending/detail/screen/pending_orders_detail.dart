@@ -155,6 +155,7 @@ class _PendingDetailScreenState extends State<PendingDetailScreen>
         }
         if (state is UpdateTradeSuccess) {
           showSnackbar(context, state.message, success: true);
+          context.read<PendingOrderBloc>().add(LoadPendingOrders());
         }
         if (state is UpdateTradeError) {
           showSnackbar(context, state.message, success: true);

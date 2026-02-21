@@ -99,19 +99,28 @@ class _WithdrawalHistoryView extends StatelessWidget {
           }
 
           if (state is WithdrawalHistoryLoaded) {
-            return RefreshIndicator(
-              onRefresh: () async {
-                context.read<WithdrawalHistoryBloc>().add(LoadWithdrawalHistory(showLoading: false));
-                // Wait a bit for the refresh to complete
-                await Future.delayed(const Duration(milliseconds: 500));
-              },
-              child: ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: state.withdrawals.length,
-                itemBuilder: (context, index) {
-                  return _WithdrawalHistoryCard(withdrawal: state.withdrawals[index]);
-                },
-              ),
+            return Column(
+              children: [
+                const _WithdrawalFilterBar(),
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      context.read<WithdrawalHistoryBloc>().add(
+                          LoadWithdrawalHistory(showLoading: false));
+                      await Future.delayed(const Duration(milliseconds: 500));
+                    },
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: state.filteredWithdrawals.length,
+                      itemBuilder: (context, index) {
+                        return _WithdrawalHistoryCard(
+                          withdrawal: state.filteredWithdrawals[index],
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
             );
           }
 
@@ -225,32 +234,33 @@ class _WithdrawalHistoryCard extends StatelessWidget {
   }
 
   Widget _buildMethodIcon(String method) {
-    IconData icon;
+    String asset;
     Color color;
 
     switch (method.toLowerCase()) {
       case 'upi':
-        icon = Icons.account_balance;
+        asset = 'assets/images/deposit/upi_transaction.png';
         color = Colors.purple;
         break;
       case 'usdt':
       case 'usdt_bep20':
       case 'usdt_trc20':
       case 'usdt_erc20':
-        icon = Icons.currency_bitcoin;
+        asset = 'assets/images/deposit/usdt.png';
         color = Colors.green;
         break;
       case 'bank':
-        icon = Icons.account_balance;
+        asset = 'assets/images/deposit/bank.png';
         color = Colors.brown;
         break;
       default:
-        icon = Icons.payment;
+        asset = 'assets/images/deposit/upi_transaction.png';
         color = Colors.grey;
     }
 
-    return Icon(icon, size: 16, color: color);
+    return Image.asset('$asset', width: 24, height: 24,);
   }
+
 
   Widget _buildStatusBadge(String status) {
     Color bgColor;
@@ -309,5 +319,115 @@ class _WithdrawalHistoryCard extends StatelessWidget {
 
   String _formatDate(DateTime date) {
     return DateFormat('dd-MM-yyyy, hh:mm a').format(date);
+  }
+}
+
+class _WithdrawalFilterBar extends StatefulWidget {
+  const _WithdrawalFilterBar();
+
+  @override
+  State<_WithdrawalFilterBar> createState() =>
+      _WithdrawalFilterBarState();
+}
+
+class _WithdrawalFilterBarState
+    extends State<_WithdrawalFilterBar> {
+  DateTimeRange? _selectedRange;
+  final TextEditingController _searchCtrl =
+  TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    final bloc = context.read<WithdrawalHistoryBloc>();
+
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          /// DATE RANGE
+          Expanded(
+            flex: 2,
+            child: GestureDetector(
+              onTap: () async {
+                final range = await showDateRangePicker(
+                  context: context,
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime.now(),
+                );
+
+                if (range != null) {
+                  setState(() => _selectedRange = range);
+
+                  bloc.add(FilterWithdrawalHistory(
+                    searchQuery: _searchCtrl.text,
+                    dateRange: range,
+                  ));
+                }
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 12, vertical: 12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.orange),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _selectedRange == null
+                            ? 'Select Date'
+                            : '${DateFormat('dd-MM-yyyy').format(_selectedRange!.start)}'
+                            '  to  '
+                            '${DateFormat('dd-MM-yyyy').format(_selectedRange!.end)}',
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                    ),
+                    const Icon(Icons.calendar_today,
+                        size: 18, color: Colors.orange),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(width: 12),
+
+          /// SEARCH
+          Expanded(
+            child: Container(
+              padding:
+              const EdgeInsets.symmetric(horizontal: 8),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.orange),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.search,
+                      color: Colors.orange),
+                  Expanded(
+                    child: TextField(
+                      controller: _searchCtrl,
+                      decoration: const InputDecoration(
+                        hintText: 'Search',
+                        border: InputBorder.none,
+                      ),
+                      onChanged: (value) {
+                        bloc.add(FilterWithdrawalHistory(
+                          searchQuery: value,
+                          dateRange: _selectedRange,
+                        ));
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

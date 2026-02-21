@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Widget StepsCard(List<String> steps, {VoidCallback? onClose, bool withDraw = false}) {
+Widget StepsCard(List<String> steps, {bool withDraw = false}) {
   return Container(
     padding: const EdgeInsets.all(16),
     decoration: BoxDecoration(
@@ -24,21 +24,6 @@ Widget StepsCard(List<String> steps, {VoidCallback? onClose, bool withDraw = fal
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-            GestureDetector(
-              onTap: onClose,
-              child: Container(
-                height: 28,
-                width: 28,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.black),
-                ),
-                child: const Icon(
-                  Icons.close,
-                  size: 16,
                 ),
               ),
             ),

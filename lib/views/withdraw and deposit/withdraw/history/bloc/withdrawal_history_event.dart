@@ -12,3 +12,13 @@ class LoadWithdrawalHistory extends WithdrawalHistoryEvent {
 
 /// Refresh withdrawal history (pull-to-refresh)
 class RefreshWithdrawalHistory extends WithdrawalHistoryEvent {}
+
+class FilterWithdrawalHistory extends WithdrawalHistoryEvent {
+  final String searchQuery;
+  final DateTimeRange? dateRange;
+
+  FilterWithdrawalHistory({
+    this.searchQuery = '',
+    this.dateRange,
+  });
+}

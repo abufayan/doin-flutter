@@ -121,7 +121,7 @@ Future<String> loadBanner() async {
     final data = BannerResponse.fromJson(response.data);
 
     if (data.success && data.banners.isNotEmpty) {
-      return data.banners.first.image;
+      return data.banners[1].image;
     }
   } catch (e) {}
 

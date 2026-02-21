@@ -1,6 +1,7 @@
 import 'package:doin_fx/core/widgets/app_loaders.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:doin_fx/core/routes/app_router.dart';
+import 'package:doin_fx/widgets/doin_design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -45,10 +46,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           if (state.navigateRequired) {
             context.router.push(ResetPasswordRoute(email: emailCtrl.text));
           }
-        } else if (state is AuthFailure) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message)));
+        } else if (state is OtpForgotPasswordError) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
         }
       },
       builder: (context, state) {
@@ -63,71 +62,27 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 children: [
                   const SizedBox(height: 40),
                   Center(
-                    child: Column(
-                      children: [
-                        Container(
-                          height: 52,
-                          width: 52,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFFF9800),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Center(
-                            child: Text(
-                              'D',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 26,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Doin',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFFFF9800),
-                          ),
-                        ),
-                        const Text(
-                          'Mobi 1.0',
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
-                        ),
-                      ],
-                    ),
+                    child: DoinDesign(),
                   ),
                   const SizedBox(height: 32),
-                  Center(
-                    child: RichText(
-                      text: const TextSpan(
-                        style: TextStyle(fontSize: 22),
-                        children: [
-                          TextSpan(
-                            text: 'Welcome to ',
-                            style: TextStyle(color: Colors.black),
-                          ),
-                          TextSpan(
-                            text: 'Doin FX',
-                            style: TextStyle(
-                              color: Color(0xFFFF9800),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
+                  Text(
+                    'Oops! Can’t remember your password?',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      height: 1.2,
+                      letterSpacing: -0.3,
+                      color: Colors.black,
                     ),
                   ),
                   const SizedBox(height: 40),
                   const Text(
-                    'Forgot Password',
+                    'Forgot your password?',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                   ),
+                  const SizedBox(height: 5),
+                  const Text('Enter your registered email address.', style: TextStyle(fontSize: 13)),
                   const SizedBox(height: 20),
-                  const Text('Your Email ID', style: TextStyle(fontSize: 13)),
-                  const SizedBox(height: 6),
                   Form(
                     key: _formKey,
                     child: Column(

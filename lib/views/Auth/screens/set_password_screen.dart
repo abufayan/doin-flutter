@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:doin_fx/core/routes/app_router.dart';
 import 'package:doin_fx/views/auth/bloc/auth_bloc.dart';
+import 'package:doin_fx/widgets/doin_design.dart';
 import 'package:doin_fx/widgets/password_field_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -92,38 +93,7 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
                   const SizedBox(height: 32),
 
                   /// Logo
-                  Center(
-                    child: Column(
-                      children: const [
-                        CircleAvatar(
-                          radius: 24,
-                          backgroundColor: Color(0xFFFF9F1D),
-                          child: Text(
-                            'D',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          'Doin',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFFFF9F1D),
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          'Mobi 1.0',
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                  ),
+                  DoinDesign(),
 
                   const SizedBox(height: 32),
 

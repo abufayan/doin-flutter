@@ -64,6 +64,13 @@ class AppLoaders {
     );
   }
 
+  /// A smaller spinner for buttons or inline use.
+  static Widget textLoader({Color color = Colors.orange, double size = 22.0}) {
+    return Center(
+      child: SpinKitThreeBounce(color: color, size: size * 0.6),
+    );
+  }
+
   /// A base shimmer wrapper.
   static Widget shimmerWrapper({required Widget child}) {
     return Shimmer.fromColors(

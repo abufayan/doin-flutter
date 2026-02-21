@@ -76,13 +76,15 @@ class DepositMethodConfig {
   static DepositMethodConfig fromApiData(PaymentMethodItem apiData) {
     final isUpi = apiData.paymentMode.toUpperCase() == 'UPI';
     final type = _getDepositMethodType(apiData.paymentMode);
+    final steps = _getEffectiveSteps(type);
+
 
     return DepositMethodConfig(
       type: type,
       title: apiData.displayName,
       currency: apiData.currency,
       minDepositText: 'Minimum deposit : ',
-      steps: isUpi ? _upiSteps : _usdtSteps,
+      steps: steps,
       iconAsset: apiData.iconAsset,
       processingTime: 'Within 24 hours',
       fees: '0%',
@@ -119,9 +121,42 @@ class DepositMethodConfig {
     }
   }
 
-  static const List<String> _usdtSteps = [
+  static List<String> _getEffectiveSteps(DepositMethodType type) {
+    if (type == DepositMethodType.upi) {
+      return _upiSteps;
+    } else if (type == DepositMethodType.usdtBep20) {
+      return _usdtBep20Steps;
+    } else if (type == DepositMethodType.usdtTrc20) {
+      return _usdtTrc20Steps;
+    } else if (type == DepositMethodType.usdtErc20) {
+      return _usdtErc20Steps;
+    } else if(type == DepositMethodType.bankTransfer) {
+      return _bankSteps;
+    }
+    else {
+      return [];
+    }
+  }
+
+  static const List<String> _usdtBep20Steps = [
     'Enter the amount in USD.',
-    'Scan the QR Code or use USDT Address to make your payment.',
+    'Scan the QR Code or use USDT BEP 20 Address to make your payment.',
+    'Enter the Txid.',
+    'Upload payment screenshot.',
+    "Click 'Submit' and your amount will be reflected in your account shortly.",
+  ];
+
+  static const List<String> _usdtTrc20Steps = [
+    'Enter the amount in USD.',
+    'Scan the QR Code or use USDT TRC 20 Address to make your payment.',
+    'Enter the Txid.',
+    'Upload payment screenshot.',
+    "Click 'Submit' and your amount will be reflected in your account shortly.",
+  ];
+
+  static const List<String> _usdtErc20Steps = [
+    'Enter the amount in USD.',
+    'Scan the QR Code or use USDT ERC 20 Address to make your payment.',
     'Enter the Txid.',
     'Upload payment screenshot.',
     "Click 'Submit' and your amount will be reflected in your account shortly.",
@@ -133,5 +168,12 @@ class DepositMethodConfig {
     'Enter the UTR / Transaction ID.',
     'Upload payment screenshot.',
     "Click DEPOSIT and your amount reflects in your account",
+  ];
+
+  static const List<String> _bankSteps = [
+    'Enter the amount in INR.',
+    'Verify bank details.',
+    'Upload payment screenshot.',
+    'Click Withdraw and your fund will get processed.',
   ];
 }
