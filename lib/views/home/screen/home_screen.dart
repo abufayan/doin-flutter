@@ -66,7 +66,7 @@ class _HomeViewState extends State<_HomeView> {
       child: BlocConsumer<HomeBloc, HomeState>(
         listener: (BuildContext context, HomeState state) {
           // Show snackbar on account switch
-          if (state is AccountSwitched) { 
+          if (state is AccountSwitched) {
             if (state.errorMessage != null) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -263,7 +263,7 @@ class _HomeViewState extends State<_HomeView> {
                     }
 
                     if (i == 1) {
-                      context.read<FavouritesBloc>().add(LoadFavouritesEvent()); 
+                      context.read<FavouritesBloc>().add(LoadFavouritesEvent());
                     }
 
                     if (i == 0) {
@@ -560,24 +560,24 @@ class _PremiumBottomNavBar extends StatelessWidget {
                   return Stack(
                     children: [
                       // ── Animated pill indicator ──
-                      AnimatedPositioned(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeOutCubic,
-                        left: itemWidth * currentIndex + (itemWidth - 48) / 2,
-                        top: 0,
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeOutCubic,
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: const Color(
-                              0xFFFF8C00,
-                            ).withValues(alpha: 0.10),
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                      ),
+                      // AnimatedPositioned(
+                      //   duration: const Duration(milliseconds: 300),
+                      //   curve: Curves.easeOutCubic,
+                      //   left: itemWidth * currentIndex + (itemWidth - 48) / 2,
+                      //   top: 0,
+                      //   child: AnimatedContainer(
+                      //     duration: const Duration(milliseconds: 300),
+                      //     curve: Curves.easeOutCubic,
+                      //     width: 48,
+                      //     height: 48,
+                      //     decoration: BoxDecoration(
+                      //       color: const Color(
+                      //         0xFFFF8C00,
+                      //       ).withValues(alpha: 0.10),
+                      //       borderRadius: BorderRadius.circular(14),
+                      //     ),
+                      //   ),
+                      // ),
 
                       // ── Tab items ──
                       Row(
@@ -602,7 +602,7 @@ class _PremiumBottomNavBar extends StatelessWidget {
                                       scale: isActive ? 1.15 : 1.0,
                                       child: Image.asset(
                                         item.assetPath,
-                                        width: 22, 
+                                        width: 22,
                                         height: 22,
                                         color: isActive
                                             ? const Color(0xFFFF8C00)
@@ -619,11 +619,11 @@ class _PremiumBottomNavBar extends StatelessWidget {
                                       style: TextStyle(
                                         fontSize: 11,
                                         fontWeight: FontWeight.w700,
-                                        color: isActive 
+                                        color: isActive
                                             ? const Color(0xFFFF8C00)
                                             : Colors.black54,
                                         letterSpacing: isActive ? 0.3 : 0,
-                                        fontFamily: 'Poppins'
+                                        fontFamily: 'Poppins',
                                       ),
                                       child: Text(item.label),
                                     ),

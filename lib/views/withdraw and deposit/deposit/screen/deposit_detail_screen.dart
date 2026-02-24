@@ -79,11 +79,7 @@ class _DepositDetailScreenState extends State<DepositDetailScreen> {
   }
 
   void _scrollToTop() {
-    _scrollController.animateTo(
-      0,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOut,
-    );
+    _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
   }
 
   @override
@@ -113,9 +109,7 @@ class _DepositDetailScreenState extends State<DepositDetailScreen> {
   }
 
   bool _isDepositFormComplete() {
-    final hasAmount =
-        _amountController.text.isNotEmpty &&
-        double.tryParse(_amountController.text) != null;
+    final hasAmount = _amountController.text.isNotEmpty && double.tryParse(_amountController.text) != null;
     final hasTransactionId = _transactionIdController.text.isNotEmpty;
     final hasScreenshot = _image != null;
 
@@ -157,18 +151,14 @@ class _DepositDetailScreenState extends State<DepositDetailScreen> {
 
     setState(() => _errorMessage = null);
 
-    final paymentType = widget.config.type == DepositMethodType.upi
-        ? 'upi'
-        : 'usdt';
+    final paymentType = widget.config.type == DepositMethodType.upi ? 'upi' : 'usdt';
 
     _depositBloc.add(
       OnSubmit(
         paymentMethod: paymentType,
         transactionId: _transactionIdController.text.trim(),
         enterAmount: _amountController.text.trim(),
-        upiId: _upiIdController.text.isNotEmpty
-            ? _upiIdController.text.trim()
-            : null,
+        upiId: _upiIdController.text.isNotEmpty ? _upiIdController.text.trim() : null,
         paymentScreenshot: _image,
       ),
     );
@@ -185,24 +175,18 @@ class _DepositDetailScreenState extends State<DepositDetailScreen> {
       child: BlocConsumer<DepositBloc, DepositState>(
         listener: (context, state) {
           if (state is DepositSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.response.message),
-                backgroundColor: Colors.green,
-              ),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.response.message), backgroundColor: Colors.green));
             // Navigate back after successful submission
             Future.delayed(const Duration(seconds: 2), () {
               if (mounted) Navigator.pop(context);
             });
           } else if (state is DepositFailure) {
             setState(() => _errorMessage = state.message);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.red,
-              ),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: Colors.red));
           }
         },
         builder: (BuildContext context, DepositState state) {
@@ -238,10 +222,7 @@ class _DepositDetailScreenState extends State<DepositDetailScreen> {
                             Icon(Icons.error, color: Colors.red),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: Text(
-                                _errorMessage!,
-                                style: TextStyle(color: Colors.red.shade900),
-                              ),
+                              child: Text(_errorMessage!, style: TextStyle(color: Colors.red.shade900)),
                             ),
                           ],
                         ),
@@ -249,19 +230,14 @@ class _DepositDetailScreenState extends State<DepositDetailScreen> {
                     ),
 
                   /// Steps
-                  StepsCard(
-                    config.steps,
-                  ),
+                  StepsCard(config.steps),
 
                   NoteCard(config.note),
 
                   const SizedBox(height: 20),
 
                   /// QR / Address
-                  Align(
-                    alignment: Alignment.center,
-                    child: _sectionTitle(config.title, fontSize: 30),
-                  ),
+                  Align(alignment: Alignment.center, child: _sectionTitle(config.title, fontSize: 30)),
                   // Use effectiveQrImage which checks API data first, then falls back to hardcoded
                   if (config.effectiveQrImage != null)
                     Center(
@@ -271,16 +247,10 @@ class _DepositDetailScreenState extends State<DepositDetailScreen> {
                               height: 160,
                               loadingBuilder: (context, child, loadingProgress) {
                                 if (loadingProgress == null) return child;
-                                return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
+                                return const Center(child: CircularProgressIndicator());
                               },
                               errorBuilder: (context, error, stackTrace) {
-                                return Icon(
-                                  Icons.qr_code_2,
-                                  size: 160,
-                                  color: Colors.grey[400],
-                                );
+                                return Icon(Icons.qr_code_2, size: 160, color: Colors.grey[400]);
                               },
                             )
                           : Image.asset(config.effectiveQrImage!, height: 160),
@@ -290,12 +260,11 @@ class _DepositDetailScreenState extends State<DepositDetailScreen> {
                   if (config.effectiveAddress != null) ...[
                     const SizedBox(height: 12),
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          config.addressLabel ?? 'Address : ',
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        SelectableText(config.effectiveAddress!),
+                        Text(config.addressLabel ?? 'Address : ', style: const TextStyle(fontWeight: FontWeight.w600)),
+                        const SizedBox(width: 6),
+                        Expanded(child: SelectableText(config.effectiveAddress!, style: const TextStyle(height: 1.4))),
                       ],
                     ),
                   ],
@@ -305,17 +274,9 @@ class _DepositDetailScreenState extends State<DepositDetailScreen> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       child: Text(
-                        minimumTextResolver(
-                          config,
-                          minimumUsd ?? 0,
-                          minimumInr ?? 0,
-                        ),
+                        minimumTextResolver(config, minimumUsd ?? 0, minimumInr ?? 0),
 
-                        style: const TextStyle(
-                          color: Color(0xFFB00000),
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: const TextStyle(color: Color(0xFFB00000), fontSize: 20, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
@@ -344,38 +305,20 @@ class _DepositDetailScreenState extends State<DepositDetailScreen> {
                           decoration: InputDecoration(
                             prefixIcon: Padding(
                               padding: const EdgeInsets.all(13),
-                              child: Image.asset(
-                                config.symbol,
-                                width: 20,
-                                height: 20,
-                                fit: BoxFit.contain,
-                              ),
+                              child: Image.asset(config.symbol, width: 20, height: 20, fit: BoxFit.contain),
                             ),
-                            prefixIconConstraints: const BoxConstraints(
-                              minWidth: 48,
-                              minHeight: 48,
-                            ),
+                            prefixIconConstraints: const BoxConstraints(minWidth: 48, minHeight: 48),
                             hintText: '0',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.grey.shade400,
-                              ),
+                              borderSide: BorderSide(color: Colors.grey.shade400),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFFF9800),
-                                width: 2,
-                              ),
+                              borderSide: const BorderSide(color: Color(0xFFFF9800), width: 2),
                             ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              vertical: 16,
-                              horizontal: 12,
-                            ),
+                            contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -389,38 +332,20 @@ class _DepositDetailScreenState extends State<DepositDetailScreen> {
                           decoration: InputDecoration(
                             prefixIcon: Padding(
                               padding: const EdgeInsets.all(13),
-                              child: Image.asset(
-                                usd,
-                                width: 20,
-                                height: 20,
-                                fit: BoxFit.contain,
-                              ),
+                              child: Image.asset(usd, width: 20, height: 20, fit: BoxFit.contain),
                             ),
-                            prefixIconConstraints: const BoxConstraints(
-                              minWidth: 48,
-                              minHeight: 48,
-                            ),
+                            prefixIconConstraints: const BoxConstraints(minWidth: 48, minHeight: 48),
                             hintText: '0',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Colors.grey.shade400,
-                              ),
+                              borderSide: BorderSide(color: Colors.grey.shade400),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFFF9800),
-                                width: 2,
-                              ),
+                              borderSide: const BorderSide(color: Color(0xFFFF9800), width: 2),
                             ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              vertical: 16,
-                              horizontal: 12,
-                            ),
+                            contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                           ),
                         ),
 
@@ -442,31 +367,18 @@ class _DepositDetailScreenState extends State<DepositDetailScreen> {
                               labelText: 'Transaction ID / UTR',
                               hintText: 'Enter your transaction reference',
                               prefixIcon: const Icon(Icons.receipt_long),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(
-                                  color: Colors.grey.shade400,
-                                ),
+                                borderSide: BorderSide(color: Colors.grey.shade400),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
-                                borderSide: const BorderSide(
-                                  color: Color(0xFFFF9800),
-                                  width: 2,
-                                ),
+                                borderSide: const BorderSide(color: Color(0xFFFF9800), width: 2),
                               ),
                               helperText: 'Required for payment verification',
-                              helperStyle: TextStyle(
-                                color: Colors.grey.shade600,
-                                fontSize: 12,
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 16,
-                              ),
+                              helperStyle: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
                             ),
                           ),
                         ],
@@ -547,53 +459,42 @@ class _DepositDetailScreenState extends State<DepositDetailScreen> {
                       }
 
                       // 🔹 Parse entered values
-                      final enteredInr =
-                          double.tryParse(_amountController.text) ?? 0.0;
+                      final enteredInr = double.tryParse(_amountController.text) ?? 0.0;
 
-                      final enteredUsd =
-                          double.tryParse(_amountUsdCtrl.text) ?? 0.0;
+                      final enteredUsd = double.tryParse(_amountUsdCtrl.text) ?? 0.0;
 
                       bool isAmountTooLow = false;
                       String? minimumMessage;
 
                       // 🔹 UPI Minimum Check (INR restriction)
-                      if (widget.config.type == DepositMethodType.upi &&
-                          minimumUsd != null &&
-                          minimumInr != null) {
+                      if (widget.config.type == DepositMethodType.upi && minimumUsd != null && minimumInr != null) {
                         final conversionRate = minimumInr; // 92
                         final minimumRequiredInr = minimumUsd * conversionRate;
 
                         if (enteredInr > 0 && enteredInr < minimumRequiredInr) {
                           isAmountTooLow = true;
-                          minimumMessage =
-                              'Minimum deposit is ₹${minimumRequiredInr.toStringAsFixed(0)}';
+                          minimumMessage = 'Minimum deposit is ₹${minimumRequiredInr.toStringAsFixed(0)}';
                         }
                       }
 
-                      if (widget.config.type == DepositMethodType.usdtTrc20 &&
-                          minimumUsd != null) {
+                      if (widget.config.type == DepositMethodType.usdtTrc20 && minimumUsd != null) {
                         if (enteredUsd > 0 && enteredUsd < minimumUsd) {
                           isAmountTooLow = true;
-                          minimumMessage =
-                              'Minimum deposit is \$${minimumUsd.toStringAsFixed(2)}';
+                          minimumMessage = 'Minimum deposit is \$${minimumUsd.toStringAsFixed(2)}';
                         }
                       }
 
-                      if (widget.config.type == DepositMethodType.usdtErc20 &&
-                          minimumUsd != null) {
+                      if (widget.config.type == DepositMethodType.usdtErc20 && minimumUsd != null) {
                         if (enteredUsd > 0 && enteredUsd < minimumUsd) {
                           isAmountTooLow = true;
-                          minimumMessage =
-                              'Minimum deposit is \$${minimumUsd.toStringAsFixed(2)}';
+                          minimumMessage = 'Minimum deposit is \$${minimumUsd.toStringAsFixed(2)}';
                         }
                       }
 
-                      if (widget.config.type == DepositMethodType.usdtBep20 &&
-                          minimumUsd != null) {
+                      if (widget.config.type == DepositMethodType.usdtBep20 && minimumUsd != null) {
                         if (enteredUsd > 0 && enteredUsd < minimumUsd) {
                           isAmountTooLow = true;
-                          minimumMessage =
-                              'Minimum deposit is \$${minimumUsd.toStringAsFixed(2)}';
+                          minimumMessage = 'Minimum deposit is \$${minimumUsd.toStringAsFixed(2)}';
                         }
                       }
 
@@ -605,10 +506,7 @@ class _DepositDetailScreenState extends State<DepositDetailScreen> {
                       //   }
                       // }
 
-                      final isEnabled =
-                          _isDepositFormComplete() &&
-                          !isLoading &&
-                          !isAmountTooLow;
+                      final isEnabled = _isDepositFormComplete() && !isLoading && !isAmountTooLow;
 
                       return Column(
                         children: [
@@ -617,29 +515,20 @@ class _DepositDetailScreenState extends State<DepositDetailScreen> {
                               padding: const EdgeInsets.only(bottom: 8.0),
                               child: Text(
                                 minimumMessage ?? '',
-                                style: TextStyle(
-                                  color: Colors.red.shade700,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
+                                style: TextStyle(color: Colors.red.shade700, fontWeight: FontWeight.bold, fontSize: 12),
                               ),
                             ),
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: isEnabled
-                                    ? const Color(0xFFFF9800)
-                                    : Colors.grey.shade400,
+                                backgroundColor: isEnabled ? const Color(0xFFFF9800) : Colors.grey.shade400,
                                 disabledBackgroundColor: Colors.grey.shade400,
                               ),
                               onPressed: isEnabled ? _submit : null,
                               child: isLoading
                                   ? AppLoaders.buttonLoader()
-                                  : const Text(
-                                      'Deposit',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
+                                  : const Text('Deposit', style: TextStyle(color: Colors.white)),
                             ),
                           ),
                         ],
@@ -668,11 +557,7 @@ class _DepositDetailScreenState extends State<DepositDetailScreen> {
   }
 }
 
-String minimumTextResolver(
-  DepositMethodConfig config,
-  double minimumUsd,
-  double conversionRate,
-) {
+String minimumTextResolver(DepositMethodConfig config, double minimumUsd, double conversionRate) {
   if (config.type == DepositMethodType.upi) {
     final minimumInr = minimumUsd * conversionRate;
 

@@ -16,35 +16,70 @@ class DepositMethodsBloc extends Bloc<DepositMethodsEvent, DepositMethodsState> 
     on<RefreshDepositMethods>(_onRefreshDepositMethods);
   }
 
-  FutureOr<void> _onLoadDepositMethods(LoadDepositMethods event, Emitter<DepositMethodsState> emit) async {
+  FutureOr<void> _onLoadDepositMethods(
+      LoadDepositMethods event,
+      Emitter<DepositMethodsState> emit,
+      ) async {
     emit(DepositMethodsLoading());
 
     try {
       final url = baseUrl + getActivePaymentMethods;
-      final response = await dio.get(url, queryParameters: {'type': 'deposit'});
 
-      final methodsResponse = ActivePaymentMethodsResponse.fromJson(response.data);
+      final response = await dio.get(
+        url,
+        queryParameters: {'type': 'deposit'},
+      );
+
+      final methodsResponse =
+      ActivePaymentMethodsResponse.fromJson(response.data);
 
       if (!methodsResponse.success) {
-        emit(DepositMethodsError(message: 'Failed to load payment methods'));
+        emit(DepositMethodsError(
+            message: 'Failed to load payment methods'));
         return;
       }
 
-      // Filter only active deposit methods
-      final activeMethods = methodsResponse.data.where((method) => method.isDepositActive).toList();
+      // 🔥 Filter only active deposit methods
+      final activeMethods = methodsResponse.data
+          .where((method) => method.isDepositActive)
+          .toList();
 
       if (activeMethods.isEmpty) {
         emit(DepositMethodsEmpty());
-      } else {
-        emit(DepositMethodsLoaded(methods: activeMethods));
+        return;
       }
+
+      // 🔥 Custom Order Priority
+      const orderPriority = {
+        'usdt': 1,
+        'usdt_bep20': 1,
+        'upi': 2,
+        'bitcoin': 3,
+        'usdt_trc_20': 4,
+        'usdt_erc_20': 5,
+      };
+
+      // 🔥 Sort according to required order
+      activeMethods.sort((a, b) {
+        final aPriority =
+            orderPriority[a.paymentMode.toLowerCase()] ?? 999;
+        final bPriority =
+            orderPriority[b.paymentMode.toLowerCase()] ?? 999;
+
+        return aPriority.compareTo(bPriority);
+      });
+
+      emit(DepositMethodsLoaded(methods: activeMethods));
     } on DioException catch (e) {
       final message = e.response?.data is Map
-          ? e.response?.data['message']?.toString() ?? 'Failed to load payment methods'
+          ? e.response?.data['message']?.toString() ??
+          'Failed to load payment methods'
           : 'Failed to load payment methods';
+
       emit(DepositMethodsError(message: message));
     } catch (e) {
-      emit(DepositMethodsError(message: 'Failed to load payment methods'));
+      emit(DepositMethodsError(
+          message: 'Failed to load payment methods'));
     }
   }
 
