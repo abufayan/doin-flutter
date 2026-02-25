@@ -250,7 +250,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
                     Row(
                       children: [
-                        FaIcon(FontAwesomeIcons.circleQuestion, size: 14),
+                        FaIcon(FontAwesomeIcons.circleQuestion, size: 20),
                         const SizedBox(width: 8),
                         const Text('Connect anytime and get instant support.', style: TextStyle(fontSize: 13)),
                       ],
@@ -258,7 +258,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        const FaIcon(FontAwesomeIcons.whatsapp, color: Colors.green, size: 16),
+                        const FaIcon(FontAwesomeIcons.whatsapp, color: Colors.green, size: 22),
                         const SizedBox(width: 8),
                         Text(
                           'WhatsApp: ${contactData?.whatsappNumber ?? '+00 1234567890'}',
@@ -272,7 +272,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         CircleAvatar(
                           radius: 10,
                           backgroundColor: Colors.blue,
-                          child: FaIcon(FontAwesomeIcons.envelope, size: 10, color: Colors.white),
+                          child: FaIcon(FontAwesomeIcons.envelope, size: 14, color: Colors.white),
                         ),
                         const SizedBox(width: 8),
                         Text('Mail: ${contactData?.email ?? 'contact@doinfx.com'}', style: const TextStyle(fontWeight: FontWeight.w500)),

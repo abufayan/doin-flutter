@@ -3,6 +3,7 @@ import 'package:doin_fx/datamodel/pair_response.dart';
 import 'package:doin_fx/views/home/bloc/home_bloc.dart';
 import 'package:doin_fx/views/home/bloc/home_event.dart';
 import 'package:doin_fx/views/orders/helper/show_snackbar.dart';
+import 'package:doin_fx/views/trade/helper.dart';
 import 'package:doin_fx/views/watch/FavouritePairs/bloc/favourites_bloc.dart';
 import 'package:doin_fx/views/watch/FavouritePairs/bloc/favourites_state.dart';
 import 'package:doin_fx/views/trade/bloc/trade_bloc.dart';
@@ -178,6 +179,11 @@ class _FavouriteRowState extends State<_FavouriteRow> {
                         color: Colors.green,
                         symbol: widget.item.symbol,
                         onTap: () {
+                          if (!isForexMarketOpen()) {
+                            showMarketClosedPopup(context);
+                            return;
+                          }
+
                           context.safeNavigate(() => showBuyPopup(context, symbol: widget.item.symbol));
                         },
                       ),
@@ -187,6 +193,11 @@ class _FavouriteRowState extends State<_FavouriteRow> {
                         color: Colors.red,
                         symbol: widget.item.symbol,
                         onTap: () {
+                          if (!isForexMarketOpen()) {
+                            showMarketClosedPopup(context);
+                            return;
+                          }
+
                           context.safeNavigate(() => showSellPopup(context, symbol: widget.item.symbol));
                         },
                       ),
