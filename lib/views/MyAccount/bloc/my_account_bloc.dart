@@ -24,42 +24,39 @@ class MyAccountBloc extends Bloc<MyAccountEvent, AccountBlocState> {
     on<AddFundRequested>(_addFundRequested);
   }
 
-  Future<void> _loadMyAccount(LoadMyAccount event, Emitter<AccountBlocState> emit) async {
+  Future<void> _loadMyAccount(
+      LoadMyAccount event,
+      Emitter<AccountBlocState> emit,
+      ) async {
     if (event.showLoading) {
       emit(AccountBlocLoading());
     }
 
-    await getIt<MarketPriceService>().connect();
-
     try {
-      // if(getIt<MyAccountService>().user == null) {
-      //   await getIt<MyAccountService>().initialize();
-      // }
+      await getIt<MarketPriceService>().connect();
 
-      final String image = await loadBanner();
-      final WalletResponse? wallet = await loadWalletBalance();
+      final image = await loadBanner();
+      final wallet = await loadWalletBalance();
+
+      if (wallet == null) {
+        emit(AccountBlocFailure(error: 'Failed to load wallet'));
+        return;
+      }
 
       await getIt<MyAccountService>().setValues(
-        gotWallet: wallet!.wallet.toStringAsFixed(2),
+        gotWallet: wallet.wallet.toStringAsFixed(2),
         usedMargin: wallet.used_margin.toString(),
       );
 
-      // await getIt<MyAccountService>().initialize();
-
-      if (image != '') {
-        emit(
-          MyAccountDataLoaded(
-            bannerImage: image,
-            walletBalance: wallet.wallet.toStringAsFixed(2),
-            kycVerified: await loadKycStatus(),
-          ),
-        );
-      }
+      emit(
+        MyAccountDataLoaded(
+          bannerImage: image, // can be empty, that's fine
+          walletBalance: wallet.wallet.toStringAsFixed(2),
+          kycVerified: await loadKycStatus(),
+        ),
+      );
     } catch (e) {
-      final message = (e is DioException && e.response?.data is Map)
-          ? e.response?.data['message']?.toString() ?? 'Failed to load account data'
-          : e.toString();
-      emit(AccountBlocFailure(error: message));
+      emit(AccountBlocFailure(error: e.toString()));
     }
   }
 
@@ -121,7 +118,14 @@ Future<String> loadBanner() async {
     final data = BannerResponse.fromJson(response.data);
 
     if (data.success && data.banners.isNotEmpty) {
-      return data.banners[1].image;
+      if (data.banners.length > 1 &&
+          data.banners[1].image.isNotEmpty) {
+        return data.banners[1].image;
+      }
+
+      if (data.banners[0].image.isNotEmpty) {
+        return data.banners[0].image;
+      }
     }
   } catch (e) {}
 

@@ -64,7 +64,7 @@ class _HomeViewState extends State<_HomeView> {
         }
       },
       child: BlocConsumer<HomeBloc, HomeState>(
-        listener: (BuildContext context, HomeState state) {
+        listener: (BuildContext context, HomeState state) async {
           // Show snackbar on account switch
           if (state is AccountSwitched) {
             if (state.errorMessage != null) {
@@ -84,6 +84,13 @@ class _HomeViewState extends State<_HomeView> {
                 ),
               );
             } else if (!state.isLoading) {
+
+              // Reload all relevant BLoCs to reflect the new account environment immediately
+              context.read<MyAccountBloc>().add(LoadMyAccount());
+
+              // await Future.delayed(const Duration(milliseconds: 500));
+
+
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   behavior: SnackBarBehavior.floating,
@@ -113,8 +120,7 @@ class _HomeViewState extends State<_HomeView> {
                   ),
                 ),
               );
-              // Reload all relevant BLoCs to reflect the new account environment immediately
-              context.read<MyAccountBloc>().add(LoadMyAccount());
+
             }
           }
         },
