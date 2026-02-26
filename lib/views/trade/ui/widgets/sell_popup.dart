@@ -24,7 +24,7 @@ void showSellPopup(BuildContext context, {required String symbol}) {
 
   // Only call TradeStarted if we're initializing for the first time or if symbol changed
   // if (currentState is TradeInitial || (currentState is TradeQuoteState && currentState.symbol != symbol)) {
-  tradeBloc.add(TradeStarted(symbol: symbol));
+  // tradeBloc.add(TradeStarted(symbol: symbol));
   // }
 
   final formKey = GlobalKey<FormBuilderState>();

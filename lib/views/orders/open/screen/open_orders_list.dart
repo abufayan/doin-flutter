@@ -397,7 +397,7 @@ class _OpenOrderRow extends StatelessWidget {
       onTap: () => context.router.safePush(OpenDetailRoute(order: order)),
       leading: buildSymbolIcon(order.symbol, size: 35),
 
-      title: Text(order.symbol, style: const TextStyle(fontWeight: FontWeight.w600)),
+      title: Text(order.symbol.replaceAll('/', ''), style: const TextStyle(fontWeight: FontWeight.w600)),
 
       subtitle: Text(
         '${order.type} ${double.parse(order.lotSize).toStringAsPrecision(1)}',
