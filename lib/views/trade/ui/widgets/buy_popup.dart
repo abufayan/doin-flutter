@@ -217,11 +217,13 @@ class _BuySubmitButton extends StatelessWidget {
         bool isLotInvalid = false;
         bool isSubmitting = false;
         String? errorMessage;
+        double minLot = 0.01; // default
 
         if (state is TradeQuoteState) {
           isMarginInsufficient = state.requiredMargin > state.freeMargin;
+
           final isEth = state.symbol.contains('ETH');
-          final minLot = isEth ? 0.10 : 0.01;
+          minLot = isEth ? 0.10 : 0.01;
 
           isLotInvalid = state.lot < minLot;
           isSubmitting = state.isSubmitting;
@@ -268,7 +270,7 @@ class _BuySubmitButton extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: Text(
-                    'Lot size must be at least 0.01',
+                    'Lot size must be at least ${minLot.toStringAsFixed(2)}',
                     style: TextStyle(color: Colors.red.shade700, fontWeight: FontWeight.bold, fontSize: 12),
                   ),
                 ),

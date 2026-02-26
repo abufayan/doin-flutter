@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_interpolation_to_compose_strings
+
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
@@ -36,6 +38,7 @@ class OpenOrdersBloc extends Bloc<OpenOrdersEvent, OpenOrdersState> {
     on<CloseAllLossTrades>(_closeAllLossTrades);
     on<UpdateTrade>(updateTrade);
     on<CloseTrade>(closeTrade);
+    on<RemoveTpSl>(removeTpSl);
   }
 
   /* ---------------- LOAD ORDERS ---------------- */
@@ -317,5 +320,48 @@ class OpenOrdersBloc extends Bloc<OpenOrdersEvent, OpenOrdersState> {
   Future<void> close() {
     _priceSub.cancel();
     return super.close();
+  }
+
+  FutureOr<void> removeTpSl(RemoveTpSl event, Emitter<OpenOrdersState> emit) async {
+    try {
+      final accountType = getIt<MyAccountService>().accountType;
+
+      final removeUrl = accountType == AccountType.demo ? removeDemoTpSl : removeRealTpSl;
+
+      Map<String, dynamic> data = {'user_id': getIt<MyAccountService>().user?.userId};
+
+      if (event.removeTp) {
+        data.addAll({'take_profit': null});
+      }
+
+      if (event.removeSl) {
+        data.addAll({'stop_loss': null});
+      }
+
+      final response = await dio.put(baseUrl + removeUrl + '/${event.tradeId}/tp-sl', data: data);
+
+      if (response.data['status'] != 'success') {
+        emit(UpdateTradeError(message: response.data['message']));
+        return;
+      }
+
+      emit(RemoveTpSlSuccess(message: response.data['message'], removedTp: event.removeTp, removedSl: event.removeSl));
+    } on DioException catch (e) {
+      String errorMessage = 'Something went wrong';
+
+      if (e.response != null) {
+        final data = e.response?.data;
+
+        if (data is Map<String, dynamic>) {
+          errorMessage = data['message'] ?? data['error'] ?? 'Request failed';
+        } else {
+          errorMessage = 'Server error (${e.response?.statusCode})';
+        }
+      }
+
+      emit(UpdateTradeError(message: errorMessage));
+    } catch (e) {
+      emit(UpdateTradeError(message: 'Remove TP/SL failed: $e'));
+    }
   }
 }

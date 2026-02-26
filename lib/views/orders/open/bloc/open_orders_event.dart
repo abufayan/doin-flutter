@@ -22,6 +22,14 @@ final class UpdateTrade extends OpenOrdersEvent {
   UpdateTrade({required this.takeProfit, required this.stopLoss, required this.tradeId});
 }
 
+final class RemoveTpSl extends OpenOrdersEvent {
+  final String tradeId;
+  final bool removeTp;
+  final bool removeSl;
+
+  RemoveTpSl({required this.tradeId, this.removeTp = false, this.removeSl = false});
+}
+
 final class CloseTrade extends OpenOrdersEvent {
   final String tradeId;
 

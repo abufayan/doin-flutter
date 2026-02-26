@@ -45,15 +45,13 @@ class _PendingOrdersScreenState extends State<PendingOrdersScreen> {
                   if (state.orders.isEmpty) {
                     return RefreshIndicator(
                       onRefresh: () async {
-                        context.read<PendingOrderBloc>().add(
-                          LoadPendingOrders(),
-                        );
+                        context.read<PendingOrderBloc>().add(LoadPendingOrders());
                       },
                       child: ListView(
                         physics: const AlwaysScrollableScrollPhysics(),
                         children: const [
                           SizedBox(height: 200),
-                          Center(child: Text('No open orders')),
+                          Center(child: Text('No Pending orders')),
                         ],
                       ),
                     );
@@ -74,10 +72,7 @@ class _PendingOrdersScreenState extends State<PendingOrdersScreen> {
 
                 if (state is Error) {
                   return Center(
-                    child: Text(
-                      state.message,
-                      style: const TextStyle(color: Colors.red),
-                    ),
+                    child: Text(state.message, style: const TextStyle(color: Colors.red)),
                   );
                 }
 
@@ -156,9 +151,7 @@ class _AccountLevel extends StatelessWidget {
                 height: 6,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4),
-                  gradient: const LinearGradient(
-                    colors: [Colors.green, Colors.orange, Colors.red],
-                  ),
+                  gradient: const LinearGradient(colors: [Colors.green, Colors.orange, Colors.red]),
                 ),
               ),
               Positioned(
@@ -166,10 +159,7 @@ class _AccountLevel extends StatelessWidget {
                 child: Container(
                   width: 10,
                   height: 14,
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.circular(3),
-                  ),
+                  decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(3)),
                 ),
               ),
             ],
@@ -195,25 +185,17 @@ class PendingOrderRow extends StatelessWidget {
     final pnlValue = double.tryParse(order.pnl.toString()) ?? 0.0;
     final isProfit = pnlValue >= 0;
 
-    final formatted = DateFormat(
-      'dd/MM/yyyy, HH:mm:ss',
-    ).format(order.entryTime.toLocal());
+    final formatted = DateFormat('dd/MM/yyyy, HH:mm:ss').format(order.entryTime.toLocal());
 
     return ListTile(
       onTap: () => context.router.safePush(PendingDetailRoute(order: order)),
       leading: buildSymbolIcon(order.symbol, size: 35),
 
-      title: Text(
-        order.symbol,
-        style: const TextStyle(fontWeight: FontWeight.w600),
-      ),
+      title: Text(order.symbol, style: const TextStyle(fontWeight: FontWeight.w600)),
 
       subtitle: Text(
         '${order.type} ${double.parse(order.lotSize).toStringAsPrecision(1)}',
-        style: TextStyle(
-          fontSize: 13,
-          color: order.type == 'BUY' ? Colors.green : Colors.red,
-        ),
+        style: TextStyle(fontSize: 13, color: order.type == 'BUY' ? Colors.green : Colors.red),
       ),
 
       trailing: Column(
@@ -231,11 +213,7 @@ class PendingOrderRow extends StatelessWidget {
                 ),
                 const TextSpan(
                   text: '> ',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontFamily: 'Roboto',
-                    fontSize: 18,
-                  ),
+                  style: TextStyle(color: Colors.grey, fontFamily: 'Roboto', fontSize: 18),
                 ),
                 TextSpan(
                   text: double.parse(order.entryPrice).toStringAsFixed(2),
@@ -246,14 +224,8 @@ class PendingOrderRow extends StatelessWidget {
           ),
 
           Text(
-            DateFormat(
-              'dd/MM/yyyy, HH:mm:ss',
-            ).format(order.entryTime.toLocal()),
-            style: TextStyle(
-              fontSize: 10.5,
-              color: isProfit ? Colors.green : Colors.red,
-              fontWeight: FontWeight.bold,
-            ),
+            DateFormat('dd/MM/yyyy, HH:mm:ss').format(order.entryTime.toLocal()),
+            style: TextStyle(fontSize: 10.5, color: isProfit ? Colors.green : Colors.red, fontWeight: FontWeight.bold),
           ),
         ],
       ),

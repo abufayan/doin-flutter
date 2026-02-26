@@ -17,8 +17,7 @@ class ClosedOrdersScreen extends StatefulWidget {
   State<ClosedOrdersScreen> createState() => _ClosedOrdersScreenState();
 }
 
-class _ClosedOrdersScreenState extends State<ClosedOrdersScreen>
-    with SingleTickerProviderStateMixin {
+class _ClosedOrdersScreenState extends State<ClosedOrdersScreen> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
   late final TextEditingController _searchController;
@@ -39,15 +38,9 @@ class _ClosedOrdersScreenState extends State<ClosedOrdersScreen>
       });
     });
 
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    )..repeat(reverse: true);
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 800))..repeat(reverse: true);
 
-    _animation = Tween<double>(
-      begin: 0,
-      end: 6,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    _animation = Tween<double>(begin: 0, end: 6).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -68,21 +61,14 @@ class _ClosedOrdersScreenState extends State<ClosedOrdersScreen>
             child: AnimatedBuilder(
               animation: _animation,
               builder: (context, child) {
-                return Transform.translate(
-                  offset: Offset(0, -_animation.value),
-                  child: child,
-                );
+                return Transform.translate(offset: Offset(0, -_animation.value), child: child);
               },
               child: BlocBuilder<ClosedOrdersBloc, ClosedOrdersState>(
                 builder: (context, state) {
-                  final currentType = state is ClosedOrdersLoaded
-                      ? state.filterType
-                      : ClosedOrderTypes.last24hrs;
+                  final currentType = state is ClosedOrdersLoaded ? state.filterType : ClosedOrderTypes.last24hrs;
                   final isShowAll = currentType != ClosedOrderTypes.showAll;
                   final label = isShowAll ? 'Show All' : 'Last 24 Hrs';
-                  final nextType = isShowAll
-                      ? ClosedOrderTypes.showAll
-                      : ClosedOrderTypes.last24hrs;
+                  final nextType = isShowAll ? ClosedOrderTypes.showAll : ClosedOrderTypes.last24hrs;
 
                   return GestureDetector(
                     onTap: () {
@@ -93,18 +79,10 @@ class _ClosedOrdersScreenState extends State<ClosedOrdersScreen>
                       children: [
                         Text(
                           label,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFFFF9800),
-                          ),
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFFFF9800)),
                         ),
                         const SizedBox(height: 4),
-                        const Icon(
-                          Icons.keyboard_arrow_down,
-                          size: 18,
-                          color: Color(0xFFFF9800),
-                        ),
+                        const Icon(Icons.keyboard_arrow_down, size: 18, color: Color(0xFFFF9800)),
                       ],
                     ),
                   );
@@ -112,8 +90,7 @@ class _ClosedOrdersScreenState extends State<ClosedOrdersScreen>
               ),
             ),
           ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
           backgroundColor: Colors.white,
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -142,19 +119,11 @@ class _ClosedOrdersScreenState extends State<ClosedOrdersScreen>
                     }
 
                     if (state is ClosedOrdersLoaded) {
-                      final isShowAll =
-                          state.filterType == ClosedOrderTypes.showAll;
-                      final filteredOrders =
-                          isShowAll && _searchQuery.isNotEmpty
+                      final isShowAll = state.filterType == ClosedOrderTypes.showAll;
+                      final filteredOrders = isShowAll && _searchQuery.isNotEmpty
                           ? state.orders.where((o) {
-                              final q = _searchQuery.toLowerCase().replaceAll(
-                                '/',
-                                '',
-                              );
-                              final s = o.symbol.toLowerCase().replaceAll(
-                                '/',
-                                '',
-                              );
+                              final q = _searchQuery.toLowerCase().replaceAll('/', '');
+                              final s = o.symbol.toLowerCase().replaceAll('/', '');
                               return s.contains(q) ||
                                   o.tradeId.toString().contains(q) ||
                                   o.type.toLowerCase().contains(q);
@@ -171,14 +140,8 @@ class _ClosedOrdersScreenState extends State<ClosedOrdersScreen>
                           child: ListView(
                             physics: const AlwaysScrollableScrollPhysics(),
                             children: [
-                              _ClosedOrdersInfoBanner(
-                                filterType: state.filterType,
-                              ),
-                              if (isShowAll)
-                                _buildSearchBar(
-                                  _searchController,
-                                  _searchQuery,
-                                ),
+                              _ClosedOrdersInfoBanner(filterType: state.filterType),
+                              if (isShowAll) _buildSearchBar(_searchController, _searchQuery),
                               if (isShowAll) _csvDownloadButton(),
                               const SizedBox(height: 200),
                               const Center(child: Text('No Closed orders')),
@@ -197,14 +160,8 @@ class _ClosedOrdersScreenState extends State<ClosedOrdersScreen>
                           child: ListView(
                             physics: const AlwaysScrollableScrollPhysics(),
                             children: [
-                              _ClosedOrdersInfoBanner(
-                                filterType: state.filterType,
-                              ),
-                              if (isShowAll)
-                                _buildSearchBar(
-                                  _searchController,
-                                  _searchQuery,
-                                ),
+                              _ClosedOrdersInfoBanner(filterType: state.filterType),
+                              if (isShowAll) _buildSearchBar(_searchController, _searchQuery),
                               if (isShowAll) _csvDownloadButton(),
                               const SizedBox(height: 200),
                               const Center(child: Text('No results')),
@@ -225,15 +182,10 @@ class _ClosedOrdersScreenState extends State<ClosedOrdersScreen>
                           itemCount: filteredOrders.length + headerCount,
                           itemBuilder: (context, i) {
                             if (i == 0) {
-                              return _ClosedOrdersInfoBanner(
-                                filterType: state.filterType,
-                              );
+                              return _ClosedOrdersInfoBanner(filterType: state.filterType);
                             }
                             if (isShowAll && i == 1) {
-                              return _buildSearchBar(
-                                _searchController,
-                                _searchQuery,
-                              );
+                              return _buildSearchBar(_searchController, _searchQuery);
                             }
                             if (isShowAll && i == 2) {
                               return _csvDownloadButton();
@@ -247,10 +199,7 @@ class _ClosedOrdersScreenState extends State<ClosedOrdersScreen>
 
                     if (state is Error) {
                       return Center(
-                        child: Text(
-                          state.message,
-                          style: const TextStyle(color: Colors.red),
-                        ),
+                        child: Text(state.message, style: const TextStyle(color: Colors.red)),
                       );
                     }
 
@@ -331,9 +280,7 @@ class _AccountLevel extends StatelessWidget {
                 height: 6,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4),
-                  gradient: const LinearGradient(
-                    colors: [Colors.green, Colors.orange, Colors.red],
-                  ),
+                  gradient: const LinearGradient(colors: [Colors.green, Colors.orange, Colors.red]),
                 ),
               ),
               Positioned(
@@ -341,10 +288,7 @@ class _AccountLevel extends StatelessWidget {
                 child: Container(
                   width: 10,
                   height: 14,
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.circular(3),
-                  ),
+                  decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(3)),
                 ),
               ),
             ],
@@ -376,17 +320,11 @@ class ClosedOrderRow extends StatelessWidget {
       },
       leading: buildSymbolIcon(order.symbol, size: 35),
 
-      title: Text(
-        order.symbol.replaceAll('/', ''),
-        style: const TextStyle(fontWeight: FontWeight.w600),
-      ),
+      title: Text(order.symbol, style: const TextStyle(fontWeight: FontWeight.w600)),
 
       subtitle: Text(
         '${order.type} ${double.parse(order.lotSize).toStringAsPrecision(1)}',
-        style: TextStyle(
-          fontSize: 13,
-          color: order.type == 'BUY' ? Colors.green : Colors.red,
-        ),
+        style: TextStyle(fontSize: 13, color: order.type == 'BUY' ? Colors.green : Colors.red),
       ),
 
       trailing: Column(
@@ -395,11 +333,7 @@ class ClosedOrderRow extends StatelessWidget {
         children: [
           Text(
             '${isProfit ? '+' : '-'}\$ ${pnlValue.abs().toStringAsFixed(2)}',
-            style: TextStyle(
-              fontSize: 15.5,
-              color: isProfit ? Colors.green : Colors.red,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 15.5, color: isProfit ? Colors.green : Colors.red, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
 
@@ -415,11 +349,7 @@ class ClosedOrderRow extends StatelessWidget {
           // ),
           Text(
             _formatDate(order.exitTime!),
-            style: TextStyle(
-              fontSize: 10.5,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 10.5, color: Colors.grey[600], fontWeight: FontWeight.bold),
           ),
         ],
       ),
@@ -440,21 +370,12 @@ class _ClosedOrdersInfoBanner extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-        decoration: BoxDecoration(
-          color: const Color(0xFFF2F2F2),
-          borderRadius: BorderRadius.circular(12),
-        ),
+        decoration: BoxDecoration(color: const Color(0xFFF2F2F2), borderRadius: BorderRadius.circular(12)),
         child: Center(
           child: Text(
-            isShowAll
-                ? 'Showing all closed positions'
-                : 'Showing closed positions for the last 24 hours',
+            isShowAll ? 'Showing all closed positions' : 'Showing closed positions for the last 24 hours',
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.black54,
-              fontWeight: FontWeight.w500,
-            ),
+            style: const TextStyle(fontSize: 12, color: Colors.black54, fontWeight: FontWeight.w500),
           ),
         ),
       ),
@@ -467,9 +388,7 @@ void showClosedOrderDetails(BuildContext context, TradeOrder order) {
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-    ),
+    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
     builder: (_) {
       return Container(
         decoration: const BoxDecoration(
@@ -487,10 +406,7 @@ void showClosedOrderDetails(BuildContext context, TradeOrder order) {
                 width: 40,
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 12),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(4),
-                ),
+                decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(4)),
               ),
             ),
 
@@ -505,18 +421,11 @@ void showClosedOrderDetails(BuildContext context, TradeOrder order) {
             /// 🔹 TIME SECTION
             Text(
               'Time',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey.shade700,
-              ),
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.grey.shade700),
             ),
             const SizedBox(height: 6),
             _infoRow('Open Time', _formatDate(order.entryTime)),
-            _infoRow(
-              'Close Time',
-              order.exitTime != null ? _formatDate(order.exitTime!) : '-',
-            ),
+            _infoRow('Close Time', order.exitTime != null ? _formatDate(order.exitTime!) : '-'),
 
             const SizedBox(height: 12),
             const Divider(height: 1),
@@ -525,11 +434,7 @@ void showClosedOrderDetails(BuildContext context, TradeOrder order) {
             /// 🔹 PRICE SECTION
             Text(
               'Prices',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey.shade700,
-              ),
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.grey.shade700),
             ),
             const SizedBox(height: 6),
             _infoRow('Open Price', order.entryPrice),
@@ -544,11 +449,7 @@ void showClosedOrderDetails(BuildContext context, TradeOrder order) {
             /// 🔹 COST SECTION
             Text(
               'Costs',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey.shade700,
-              ),
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.grey.shade700),
             ),
             const SizedBox(height: 6),
             _infoRow('Swap', '${order.swap} USD'),
@@ -593,23 +494,13 @@ Widget _buildSearchBar(TextEditingController controller, String query) {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFFFF9800).withOpacity(0.25)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 10, offset: const Offset(0, 4))],
       ),
       child: TextField(
         controller: controller,
         decoration: InputDecoration(
           hintText: 'Search symbol or ID',
-          hintStyle: TextStyle(
-            color: Colors.grey.shade500,
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-          ),
+          hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14, fontWeight: FontWeight.w400),
           prefixIcon: Container(
             margin: const EdgeInsets.only(left: 12, right: 8),
             child: const Icon(Icons.search, size: 22, color: Color(0xFFFF9800)),
@@ -620,15 +511,8 @@ Widget _buildSearchBar(TextEditingController controller, String query) {
                   child: IconButton(
                     icon: Container(
                       padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.close,
-                        size: 14,
-                        color: Colors.black54,
-                      ),
+                      decoration: BoxDecoration(color: Colors.grey.shade200, shape: BoxShape.circle),
+                      child: const Icon(Icons.close, size: 14, color: Colors.black54),
                     ),
                     onPressed: () {
                       controller.clear();
@@ -636,19 +520,12 @@ Widget _buildSearchBar(TextEditingController controller, String query) {
                   ),
                 )
               : null,
-          contentPadding: const EdgeInsets.symmetric(
-            vertical: 14,
-            horizontal: 8,
-          ),
+          contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
         ),
-        style: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          color: Colors.black87,
-        ),
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black87),
       ),
     ),
   );
@@ -664,13 +541,7 @@ Widget _csvDownloadButton() {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFFFF9800).withOpacity(0.25)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 10, offset: const Offset(0, 4))],
       ),
       child: Center(
         child: Row(
@@ -679,26 +550,13 @@ Widget _csvDownloadButton() {
             Container(
               width: 32,
               height: 32,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFF9800),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.download_rounded,
-                  size: 18,
-                  color: Colors.white,
-                ),
-              ),
+              decoration: BoxDecoration(color: const Color(0xFFFF9800), borderRadius: BorderRadius.circular(10)),
+              child: const Center(child: Icon(Icons.download_rounded, size: 18, color: Colors.white)),
             ),
             const SizedBox(width: 10),
             const Text(
               'Download CSV',
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w600,
-                fontSize: 15,
-              ),
+              style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600, fontSize: 15),
             ),
           ],
         ),
@@ -712,10 +570,7 @@ Widget closedOrderHeader(TradeOrder order) {
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
       /// Position ID
-      Text(
-        'Position ID: ${order.tradeId}',
-        style: const TextStyle(fontSize: 14, color: Colors.black54),
-      ),
+      Text('Position ID: ${order.tradeId}', style: const TextStyle(fontSize: 14, color: Colors.black54)),
 
       const SizedBox(height: 12),
 
@@ -734,10 +589,7 @@ Widget closedOrderHeader(TradeOrder order) {
               children: [
                 Text(
                   order.symbol.replaceAll('/', ''),
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
 
                 const SizedBox(height: 4),
@@ -745,18 +597,13 @@ Widget closedOrderHeader(TradeOrder order) {
                 Row(
                   children: [
                     Icon(
-                      order.type == 'BUY'
-                          ? Icons.arrow_drop_up
-                          : Icons.arrow_drop_down,
+                      order.type == 'BUY' ? Icons.arrow_drop_up : Icons.arrow_drop_down,
                       color: order.type == 'BUY' ? Colors.green : Colors.red,
                       size: 18,
                     ),
                     Text(
                       '${order.type.toLowerCase()} ${order.lotSize}',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: order.type == 'BUY' ? Colors.green : Colors.red,
-                      ),
+                      style: TextStyle(fontSize: 13, color: order.type == 'BUY' ? Colors.green : Colors.red),
                     ),
                   ],
                 ),
@@ -766,9 +613,7 @@ Widget closedOrderHeader(TradeOrder order) {
 
           /// PNL
           Text(
-            order.pnl >= 0
-                ? '+\$${order.pnl.toStringAsFixed(2)}'
-                : '-\$${order.pnl.abs().toStringAsFixed(2)}',
+            order.pnl >= 0 ? '+\$${order.pnl.toStringAsFixed(2)}' : '-\$${order.pnl.abs().toStringAsFixed(2)}',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,

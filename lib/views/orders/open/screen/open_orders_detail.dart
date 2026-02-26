@@ -19,18 +19,14 @@ class OpenDetailScreen extends StatefulWidget implements AutoRouteWrapper {
 
   @override
   Widget wrappedRoute(BuildContext context) {
-    return BlocProvider.value(
-      value: context.read<OpenOrdersBloc>(),
-      child: this,
-    );
+    return BlocProvider.value(value: context.read<OpenOrdersBloc>(), child: this);
   }
 
   @override
   State<OpenDetailScreen> createState() => _OpenDetailScreenState();
 }
 
-class _OpenDetailScreenState extends State<OpenDetailScreen>
-    with SingleTickerProviderStateMixin {
+class _OpenDetailScreenState extends State<OpenDetailScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   double? takeProfit;
@@ -45,13 +41,9 @@ class _OpenDetailScreenState extends State<OpenDetailScreen>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
 
-    takeProfit = widget.order.takeProfit != null
-        ? double.tryParse(widget.order.takeProfit!)
-        : null;
+    takeProfit = widget.order.takeProfit != null ? double.tryParse(widget.order.takeProfit!) : null;
 
-    stopLoss = widget.order.stopLoss != null
-        ? double.tryParse(widget.order.stopLoss!)
-        : null;
+    stopLoss = widget.order.stopLoss != null ? double.tryParse(widget.order.stopLoss!) : null;
 
     // Store original values for discard functionality
     originalTakeProfit = takeProfit;
@@ -79,10 +71,7 @@ class _OpenDetailScreenState extends State<OpenDetailScreen>
               _symbolHeader(),
               _tabBar(),
               Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [_infoTab(), _editTab()],
-                ),
+                child: TabBarView(controller: _tabController, children: [_infoTab(), _editTab()]),
               ),
             ],
           ),
@@ -93,7 +82,7 @@ class _OpenDetailScreenState extends State<OpenDetailScreen>
 
   // -------------------- TOP HEADER --------------------
   Widget _topHeader() {
-    bool realAccount =  getIt<MyAccountService>().accountType == AccountType.live;
+    bool realAccount = getIt<MyAccountService>().accountType == AccountType.live;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Row(
@@ -104,18 +93,15 @@ class _OpenDetailScreenState extends State<OpenDetailScreen>
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(width: 8),
-          Container( 
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), 
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
               color: realAccount ? Colors.green.shade100 : Colors.blue.shade100,
               borderRadius: BorderRadius.circular(20),
             ),
-            child:  Text(
+            child: Text(
               realAccount ? 'Real' : 'Demo',
-              style: TextStyle( 
-                color: realAccount ? Colors.green : Colors.blue, 
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(color: realAccount ? Colors.green : Colors.blue, fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -126,7 +112,7 @@ class _OpenDetailScreenState extends State<OpenDetailScreen>
   // -------------------- SYMBOL HEADER --------------------
   Widget _symbolHeader() {
     return BlocConsumer<OpenOrdersBloc, OpenOrdersState>(
-      listener: (BuildContext context, OpenOrdersState state) {  
+      listener: (BuildContext context, OpenOrdersState state) {
         if (state is UpdateTradeSuccess) {
           showSnackbar(context, state.message, success: true);
           //preserving original values after successful update
@@ -136,12 +122,26 @@ class _OpenDetailScreenState extends State<OpenDetailScreen>
           }
           context.read<OpenOrdersBloc>().add(LoadOpenOrders());
         }
+        if (state is RemoveTpSlSuccess) {
+          context.read<OpenOrdersBloc>().add(LoadOpenOrders(showLoading: false));
+          showSnackbar(context, state.message, success: true);
+          if (state.removedTp) {
+            takeProfit = null;
+            originalTakeProfit = null;
+          }
+          if (state.removedSl) {
+            stopLoss = null;
+            originalStopLoss = null;
+          }
+          setState(() {});
+          // context.read<OpenOrdersBloc>().add(LoadOpenOrders());
+        }
         if (state is UpdateTradeError) {
           showSnackbar(context, state.message, success: false);
           context.read<OpenOrdersBloc>().add(LoadOpenOrders());
         }
         if (state is TradeClosed) {
-          showSnackbar(context, state.message, success: true); 
+          showSnackbar(context, state.message, success: true);
           context.read<OpenOrdersBloc>().add(LoadOpenOrders());
           context.pop();
         }
@@ -152,40 +152,25 @@ class _OpenDetailScreenState extends State<OpenDetailScreen>
         TradeOrder? order;
         // final state = context.read<OpenOrdersBloc>().state;
         if (state is OpenOrdersLoaded) {
-          order = state.orders.firstWhere(
-            (o) => o.tradeId == widget.order.tradeId,
-            orElse: () => widget.order,
-          );
+          order = state.orders.firstWhere((o) => o.tradeId == widget.order.tradeId, orElse: () => widget.order);
         }
 
         return Padding(
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
             children: [
-              IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: () => Navigator.pop(context),
-              ),
+              IconButton(icon: Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
               SizedBox(width: 8),
               SizedBox(width: 8),
               buildSymbolIcon(widget.order.symbol, size: 35),
               SizedBox(width: 8),
-              Text(
-                widget.order.symbol.toUpperCase(),
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
+              Text(widget.order.symbol.toUpperCase(), style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               Spacer(),
               Text(
                 'CMP  > ',
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.w600),
               ),
-              Text(
-                ' ${order?.cmp}',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+              Text(' ${order?.cmp}', style: TextStyle(fontWeight: FontWeight.bold)),
             ],
           ),
         );
@@ -208,53 +193,32 @@ class _OpenDetailScreenState extends State<OpenDetailScreen>
   }
 
   // -------------------- INFO TAB --------------------
-  Widget _infoTab() {  
+  Widget _infoTab() {
     return BlocBuilder<OpenOrdersBloc, OpenOrdersState>(
       builder: (context, state) {
         if (state is! OpenOrdersLoaded) {
           return AppLoaders.loadingIndicator();
         }
 
-        final order = state.orders.firstWhere(
-          (o) => o.tradeId == widget.order.tradeId,
-          orElse: () => widget.order,
-        );
+        final order = state.orders.firstWhere((o) => o.tradeId == widget.order.tradeId, orElse: () => widget.order);
 
         return Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              _infoRow(
-                'Open Time',
-                DateFormat(
-                  'dd/MM/yyyy, HH:mm:ss',
-                ).format(order.createdAt.toUtc()),
-              ),
+              _infoRow('Open Time', DateFormat('dd/MM/yyyy, HH:mm:ss').format(order.createdAt.toUtc())),
               _infoRow('Open Price', order.entryPrice),
               _infoRow(
                 'PNL',
                 '${order.pnl >= 0 ? '+' : '-'}\$${order.pnl.abs().toStringAsFixed(2)}',
                 valueColor: order.pnl >= 0 ? Colors.green : Colors.red,
               ),
-              _infoRow(
-                'Order',
-                order.type,
-                valueColor: order.type == 'BUY' ? Colors.green : Colors.red,
-              ),
-              _infoRow(
-                'Lot Size',
-                double.parse(order.lotSize).toStringAsPrecision(1),
-              ),
+              _infoRow('Order', order.type, valueColor: order.type == 'BUY' ? Colors.green : Colors.red),
+              _infoRow('Lot Size', double.parse(order.lotSize).toStringAsPrecision(1)),
               _infoRow('Swap Fee', '\$ ${order.swap}'),
               _infoRow('Position ID', '${order.tradeId}'),
-              Visibility(
-                visible: order.takeProfit != null,
-                child: _infoRow('Take Profit', '${order.takeProfit}'),
-              ),
-              Visibility(
-                visible: order.stopLoss != null,
-                child: _infoRow('Stop Loss', '${order.stopLoss}'),
-              ),
+              Visibility(visible: order.takeProfit != null, child: _infoRow('Take Profit', '${order.takeProfit}')),
+              Visibility(visible: order.stopLoss != null, child: _infoRow('Stop Loss', '${order.stopLoss}')),
               // _infoRow('Leverage', '${order.leverage}'),
               const Spacer(),
               SizedBox(
@@ -263,16 +227,12 @@ class _OpenDetailScreenState extends State<OpenDetailScreen>
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                   ),
                   onPressed: () {
-                    context.read<OpenOrdersBloc>().add(
-                      CloseTrade(tradeId: widget.order.tradeId.toString()),
-                    );
+                    context.read<OpenOrdersBloc>().add(CloseTrade(tradeId: widget.order.tradeId.toString()));
                   },
-                  child: Text('Close', style: TextStyle(color: Colors.white)),
+                  child: Text('Close Trade', style: TextStyle(color: Colors.white)),
                 ),
               ),
             ],
@@ -282,22 +242,14 @@ class _OpenDetailScreenState extends State<OpenDetailScreen>
     );
   }
 
-  Widget _infoRow(
-    String label,
-    String value, {
-    Color valueColor = Colors.black,
-  }) {
+  Widget _infoRow(String label, String value, {Color valueColor = Colors.black}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         children: [
           Text(
             label,
-            style: TextStyle(
-              color: Colors.grey[800],
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(color: Colors.grey[800], fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const Spacer(),
           Text(
@@ -324,16 +276,44 @@ class _OpenDetailScreenState extends State<OpenDetailScreen>
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          _stepperField(
-            label: 'Take Profit',
-            value: takeProfit,
-            onChanged: (v) => setState(() => takeProfit = v),
+          Row(
+            children: [
+              Expanded(
+                child: _stepperField(
+                  label: 'Take Profit',
+                  value: takeProfit,
+                  onChanged: (v) => setState(() => takeProfit = v),
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  context.read<OpenOrdersBloc>().add(
+                    RemoveTpSl(tradeId: widget.order.tradeId.toString(), removeTp: true),
+                  );
+                },
+                icon: Icon(Icons.delete),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
-          _stepperField(
-            label: 'Stop Loss',
-            value: stopLoss,
-            onChanged: (v) => setState(() => stopLoss = v),
+          Row(
+            children: [
+              Expanded(
+                child: _stepperField(
+                  label: 'Stop Loss',
+                  value: stopLoss,
+                  onChanged: (v) => setState(() => stopLoss = v),
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  context.read<OpenOrdersBloc>().add(
+                    RemoveTpSl(tradeId: widget.order.tradeId.toString(), removeSl: true),
+                  );
+                },
+                icon: Icon(Icons.delete),
+              ),
+            ],
           ),
           const Spacer(),
           Row(
@@ -341,10 +321,10 @@ class _OpenDetailScreenState extends State<OpenDetailScreen>
               Expanded(
                 child: SizedBox(
                   height: 48,
-                  child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.grey,
-                      side: const BorderSide(color: Colors.grey),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                     ),
                     onPressed: () {
                       FocusScope.of(context).unfocus(); // 🔥 ADD THIS FIRST
@@ -361,7 +341,7 @@ class _OpenDetailScreenState extends State<OpenDetailScreen>
                         stopLoss = originalStopLoss;
                       });
                     },
-                    child: Text('Discard'),
+                    child: Text('Discard', style: TextStyle(color: Colors.white)),
                   ),
                 ),
               ),
@@ -373,9 +353,7 @@ class _OpenDetailScreenState extends State<OpenDetailScreen>
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orange,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                     ),
                     onPressed: () {
                       context.read<OpenOrdersBloc>().add(
@@ -386,10 +364,7 @@ class _OpenDetailScreenState extends State<OpenDetailScreen>
                         ),
                       );
                     },
-                    child: Text(
-                      'Confirm',
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    child: Text('Confirm', style: TextStyle(color: Colors.white)),
                   ),
                 ),
               ),
@@ -400,11 +375,7 @@ class _OpenDetailScreenState extends State<OpenDetailScreen>
     );
   }
 
-  Widget _stepperField({
-    required String label,
-    required double? value,
-    required ValueChanged<double?> onChanged,
-  }) {
+  Widget _stepperField({required String label, required double? value, required ValueChanged<double?> onChanged}) {
     return _StepperFieldWidget(
       label: label,
       value: value,
@@ -448,9 +419,7 @@ class _StepperFieldWidgetState extends State<_StepperFieldWidget> {
     _focusNode = FocusNode();
 
     _controller = TextEditingController(
-      text: widget.value == null
-          ? ''
-          : widget.formatPrice(widget.value!, widget.symbol),
+      text: widget.value == null ? '' : widget.formatPrice(widget.value!, widget.symbol),
     );
 
     _focusNode.addListener(() {
@@ -462,15 +431,12 @@ class _StepperFieldWidgetState extends State<_StepperFieldWidget> {
       if (_focusNode.hasFocus) {
         if (widget.value != null) {
           _controller.text = widget.value!.toString();
-          _controller.selection = TextSelection.collapsed(
-            offset: _controller.text.length,
-          );
+          _controller.selection = TextSelection.collapsed(offset: _controller.text.length);
         }
       } else {
         // When user stops editing → format value
         if (widget.value != null) {
-          final formatted =
-              widget.formatPrice(widget.value!, widget.symbol);
+          final formatted = widget.formatPrice(widget.value!, widget.symbol);
           _controller.text = formatted;
         }
       }
@@ -481,15 +447,20 @@ class _StepperFieldWidgetState extends State<_StepperFieldWidget> {
   void didUpdateWidget(covariant _StepperFieldWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // Only sync from parent when NOT editing
-    if (!_isEditing && oldWidget.value != widget.value) {
-      final newText = widget.value == null
-          ? ''
-          : widget.formatPrice(widget.value!, widget.symbol);
-
-      if (_controller.text != newText) {
-        _controller.text = newText;
+    if (oldWidget.value != widget.value) {
+      if (widget.value == null) {
+        _controller.clear();
+        return;
       }
+
+      if (_isEditing) return;
+
+      final newText = widget.formatPrice(widget.value!, widget.symbol);
+
+      if (_controller.text == newText) return;
+
+      _controller.text = newText;
+      _controller.selection = TextSelection.collapsed(offset: _controller.text.length);
     }
   }
 
@@ -521,7 +492,7 @@ class _StepperFieldWidgetState extends State<_StepperFieldWidget> {
                 onPressed: widget.value == null
                     ? null
                     : () {
-                        widget.onChanged(widget.value! - 0.01);
+                        widget.onChanged(double.parse((widget.value! - 0.01).toStringAsFixed(5)));
                       },
               ),
 
@@ -531,13 +502,8 @@ class _StepperFieldWidgetState extends State<_StepperFieldWidget> {
                   controller: _controller,
                   focusNode: _focusNode,
                   textAlign: TextAlign.center,
-                  keyboardType: const TextInputType.numberWithOptions( 
-                    decimal: true,
-                  ),
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.zero,
-                  ),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(border: InputBorder.none, contentPadding: EdgeInsets.zero),
                   onChanged: (text) {
                     if (text.trim().isEmpty) {
                       widget.onChanged(null);
@@ -558,7 +524,7 @@ class _StepperFieldWidgetState extends State<_StepperFieldWidget> {
                 onPressed: widget.value == null
                     ? null
                     : () {
-                        widget.onChanged(widget.value! + 0.01);
+                        widget.onChanged(double.parse((widget.value! + 0.01).toStringAsFixed(5)));
                       },
               ),
             ],
@@ -568,4 +534,3 @@ class _StepperFieldWidgetState extends State<_StepperFieldWidget> {
     );
   }
 }
-
