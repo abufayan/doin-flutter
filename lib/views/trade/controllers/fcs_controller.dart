@@ -1,3 +1,4 @@
+import 'package:doin_fx/core/utils/symbol_mapper.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -12,16 +13,22 @@ class FcsChartContainer extends StatefulWidget {
 
 class _FcsChartContainerState extends State<FcsChartContainer> {
   late WebViewController _controller;
+  late String _fcsSymbol;
 
   @override
   void initState() {
     super.initState();
 
+    _fcsSymbol = SymbolMapper.map(widget.symbol);
+
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(Colors.transparent)
       ..enableZoom(false)
-      ..loadHtmlString(_html(widget.symbol), baseUrl: 'https://localhost');
+      ..loadHtmlString(
+        _html(_fcsSymbol), // 🔥 use mapped symbol
+        baseUrl: 'https://localhost',
+      );
   }
 
   @override
@@ -29,10 +36,9 @@ class _FcsChartContainerState extends State<FcsChartContainer> {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.symbol != widget.symbol) {
-      _controller.loadHtmlString(
-        _html(widget.symbol),
-        baseUrl: 'https://localhost',
-      );
+      final newMappedSymbol = SymbolMapper.map(widget.symbol);
+
+      _controller.loadHtmlString(_html(newMappedSymbol), baseUrl: 'https://localhost');
     }
   }
 
@@ -49,6 +55,8 @@ class _FcsChartContainerState extends State<FcsChartContainer> {
 
   // 🔴 NOTHING BELOW THIS LINE WAS MODIFIED 🔴
   String _html(String symbol) {
+    // print('symbol $symbol');
+
     return """
 <!DOCTYPE html>
 <html>
@@ -94,9 +102,9 @@ class _FcsChartContainerState extends State<FcsChartContainer> {
       accessKey: 'tazGE0Won8sXYWaQzcVCjaN0drdON',
       socketApiKey: 'ZxeXcXmXlHpoSn61NUhh5HBtuWTvz6P',
 
-      symbol: 'ONA:$symbol',
+      symbol: '$symbol',
       period: '1m',
-      length: 500,
+      length: 500, 
 
       displayMode: 'normal',
       theme: 'light',

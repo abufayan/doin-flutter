@@ -1,6 +1,5 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'package:auto_route/auto_route.dart';
 import 'package:doin_fx/core/enums.dart';
 import 'package:doin_fx/core/utils/symbol_icon_resolver.dart';
 import 'package:doin_fx/views/trade/ui/widgets/lot_field.dart';
@@ -10,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 
+import 'package:doin_fx/views/orders/helper/show_snackbar.dart';
 import 'package:doin_fx/views/trade/bloc/trade_bloc.dart';
 import 'package:doin_fx/views/trade/bloc/trade_event.dart';
 import 'package:doin_fx/views/trade/bloc/trade_state.dart';
@@ -23,126 +23,135 @@ void showBuyPopup(BuildContext context, {required String symbol}) {
   final currentState = tradeBloc.state;
 
   // Only call TradeStarted if we're initializing for the first time or if symbol changed
-  if (currentState is TradeInitial ||
-      (currentState is TradeQuoteState && currentState.symbol != symbol)) {
-    tradeBloc.add(TradeStarted(symbol: symbol));
-  }
+  // if (currentState is TradeInitial || (currentState is TradeQuoteState && currentState.symbol != symbol)) {
+  // tradeBloc.add(TradeStarted(symbol: symbol));
+  // }
 
   // 🔑 SET DEFAULT LOT *ONCE*
-  tradeBloc.add(TradeLotChanged(lot: 0.01));
+  // tradeBloc.add(TradeLotChanged(lot: 0.01));
+
   final formKey = GlobalKey<FormBuilderState>();
 
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-    ),
+    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
     builder: (_) {
-      return FractionallySizedBox(
-        heightFactor: 0.85,
-        child: DefaultTabController(
-          length: 3,
-          child: Builder(
-            builder: (context) {
-              final controller = DefaultTabController.of(context);
+      return BlocListener<TradeBloc, TradeState>(
+        listener: (ctx, state) {
+          if (state is TradeBuySuccess) {
+            showSnackbar(ctx, '${state.order.message}', success: true);
+            Navigator.of(ctx).pop();
+          }
+        },
+        child: FractionallySizedBox(
+          heightFactor: 0.85,
+          child: DefaultTabController(
+            length: 3,
+            child: Builder(
+              builder: (context) {
+                final controller = DefaultTabController.of(context);
 
-              controller.addListener(() {
-                if (!controller.indexIsChanging) return;
-                final form = formKey.currentState;
-                if (form == null) return;
+                controller.addListener(() {
+                  if (!controller.indexIsChanging) return;
+                  final form = formKey.currentState;
+                  if (form == null) return;
 
-                form.patchValue({
-                  'order_type': controller.index == 0
-                      ? 'market'
-                      : controller.index == 1
-                      ? 'limit'
-                      : 'advanced',
+                  form.patchValue({
+                    'order_type': controller.index == 0
+                        ? 'market'
+                        : controller.index == 1
+                        ? 'limit'
+                        : 'advanced',
+                  });
                 });
-              });
 
-              return SafeArea(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).viewInsets.bottom,
-                    left: 16,
-                    right: 16,
-                    top: 16,
-                  ),
-                  child: FormBuilder(
-                    key: formKey,
-                    child: Column(
-                      children: [
-                        FormBuilderField(
-                          name: 'symbol',
-                          initialValue: symbol,
-                          builder: (_) => const SizedBox.shrink(),
-                        ),
-                        FormBuilderField(
-                          name: 'order_type',
-                          initialValue: 'market',
-                          builder: (_) => const SizedBox.shrink(),
-                        ),
+                return SafeArea(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom,
+                      left: 16,
+                      right: 16,
+                      top: 16,
+                    ),
+                    child: FormBuilder(
+                      key: formKey,
+                      child: Column(
+                        children: [
+                          FormBuilderField(
+                            name: 'symbol',
+                            initialValue: symbol,
+                            builder: (_) => const SizedBox.shrink(),
+                          ),
+                          FormBuilderField(
+                            name: 'order_type',
+                            initialValue: 'market',
+                            builder: (_) => const SizedBox.shrink(),
+                          ),
 
-                        const SizedBox(height: 8),
+                          const SizedBox(height: 8),
 
-                        // 🔹 Selected symbol header (so user always knows what they're trading)
-                        Row(
-                          children: [
-                            buildSymbolIcon(symbol, size: 28),
-                            const SizedBox(width: 10),
-                            Text(
-                              symbol,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
+                          // 🔹 Selected symbol header (so user always knows what they're trading)
+                          Row(
+                            children: [
+                              buildSymbolIcon(symbol, size: 28),
+                              const SizedBox(width: 10),
+                              Text(symbol, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                            ],
+                          ),
 
-                        const SizedBox(height: 12),
+                          const SizedBox(height: 12),
 
-                        // Shared LotSizeField for all tabs
-                        LotSizeField(
-                          onChanged: (lot) {
-                            context.read<TradeBloc>().add(
-                              TradeLotChanged(lot: lot),
-                            );
-                          },
-                        ),
+                          // Shared LotSizeField for all tabs
+                          BlocBuilder<TradeBloc, TradeState>(
+                            buildWhen: (prev, curr) => curr is TradeQuoteState,
+                            builder: (context, state) {
+                              if (state is! TradeQuoteState) {
+                                return const SizedBox.shrink();
+                              }
 
-                        const SizedBox(height: 12),
+                              final isEth = state.symbol.contains('ETH');
 
-                        const TabBar(
-                          tabs: [
-                            Tab(text: 'Market'),
-                            Tab(text: 'Limit'),
-                            Tab(text: 'Advanced'),
-                          ],
-                        ),
+                              return LotSizeField(
+                                initialLot: state.lot,
+                                minLot: isEth ? 0.10 : 0.01,
+                                onChanged: (lot) {
+                                  context.read<TradeBloc>().add(TradeLotChanged(lot: lot));
+                                },
+                              );
+                            },
+                          ),
 
-                        const SizedBox(height: 12),
+                          const SizedBox(height: 12),
 
-                        Expanded(
-                          child: TabBarView(
-                            physics: const NeverScrollableScrollPhysics(),
-                            children: List.generate(
-                              3,
-                              (index) => _BuyOrderFormContent(
-                                orderType: OrderType.values[index],
+                          const TabBar(
+                            tabs: [
+                              Tab(text: 'Market'),
+                              Tab(text: 'Limit'),
+                              Tab(text: 'Advanced'),
+                            ],
+                          ),
+
+                          const SizedBox(height: 12),
+
+                          Expanded(
+                            child: TabBarView(
+                              physics: const NeverScrollableScrollPhysics(),
+                              children: List.generate(
+                                3,
+                                (index) => _BuyOrderFormContent(orderType: OrderType.values[index]),
                               ),
                             ),
                           ),
-                        ),
 
-                        _BuySubmitButton(formKey: formKey),
-                      ],
+                          _BuySubmitButton(formKey: formKey),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       );
@@ -165,10 +174,7 @@ class _BuyOrderFormContent extends StatelessWidget {
         children: [
           // For BUY: Limit tab shows "Limit Price", Advanced shows "Buy Above"
           if (orderType != OrderType.market)
-            OptionalPriceField(
-              'trigger_price',
-              orderType == OrderType.limit ? 'Limit Price' : 'Buy Above',
-            ),
+            OptionalPriceField('trigger_price', orderType == OrderType.limit ? 'Limit Price' : 'Buy Above'),
 
           /// 🔥 LIVE MARGIN SUMMARY
           BlocBuilder<TradeBloc, TradeState>(
@@ -210,27 +216,52 @@ class _BuySubmitButton extends StatelessWidget {
         bool isMarginInsufficient = false;
         bool isLotInvalid = false;
         bool isSubmitting = false;
+        String? errorMessage;
 
         if (state is TradeQuoteState) {
           isMarginInsufficient = state.requiredMargin > state.freeMargin;
-          isLotInvalid = state.lot < 0.01;
+          final isEth = state.symbol.contains('ETH');
+          final minLot = isEth ? 0.10 : 0.01;
+
+          isLotInvalid = state.lot < minLot;
           isSubmitting = state.isSubmitting;
+          errorMessage = state.errorMessage;
         }
 
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 12),
           child: Column(
             children: [
+              // 🔴 API error message banner
+              if (errorMessage != null)
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(bottom: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade50,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.red.shade300),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.error_outline, color: Colors.red.shade700, size: 20),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          errorMessage,
+                          style: TextStyle(color: Colors.red.shade700, fontWeight: FontWeight.w600, fontSize: 13),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               if (isMarginInsufficient)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: Text(
                     'Insufficient margin. Required > Free',
-                    style: TextStyle(
-                      color: Colors.red.shade700,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.red.shade700, fontWeight: FontWeight.bold, fontSize: 12),
                   ),
                 ),
               if (isLotInvalid)
@@ -238,11 +269,7 @@ class _BuySubmitButton extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: Text(
                     'Lot size must be at least 0.01',
-                    style: TextStyle(
-                      color: Colors.red.shade700,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.red.shade700, fontWeight: FontWeight.bold, fontSize: 12),
                   ),
                 ),
               SizedBox(
@@ -253,33 +280,23 @@ class _BuySubmitButton extends StatelessWidget {
                     backgroundColor: Colors.green,
                     disabledBackgroundColor: Colors.green.withOpacity(0.5),
                   ),
-                  onPressed:
-                      (isMarginInsufficient || isLotInvalid || isSubmitting)
+                  onPressed: (isMarginInsufficient || isLotInvalid || isSubmitting)
                       ? null
                       : () {
                           final form = formKey.currentState;
                           if (form == null) return;
 
                           form.save();
-                          context.router.pop();
 
-                          context.read<TradeBloc>().add(
-                            TradeBuyPressed(data: form.value, context: context),
-                          );
+                          context.read<TradeBloc>().add(TradeBuyPressed(data: form.value, context: context));
                         },
                   child: isSubmitting
                       ? const SizedBox(
                           height: 24,
                           width: 24,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2.5,
-                          ),
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
                         )
-                      : const Text(
-                          'BUY',
-                          style: TextStyle(color: Colors.white, fontSize: 16),
-                        ),
+                      : const Text('BUY', style: TextStyle(color: Colors.white, fontSize: 16)),
                 ),
               ),
             ],

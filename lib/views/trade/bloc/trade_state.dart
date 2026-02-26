@@ -14,6 +14,7 @@ class TradeQuoteState extends TradeState {
   final double requiredMargin;
   final double freeMargin;
   final bool isSubmitting;
+  final String? errorMessage;
 
   TradeQuoteState({
     required this.symbol,
@@ -22,6 +23,7 @@ class TradeQuoteState extends TradeState {
     required this.requiredMargin,
     required this.freeMargin,
     this.isSubmitting = false,
+    this.errorMessage,
   });
 
   TradeQuoteState copyWith({
@@ -30,6 +32,8 @@ class TradeQuoteState extends TradeState {
     double? requiredMargin,
     double? freeMargin,
     bool? isSubmitting,
+    String? errorMessage,
+    bool clearError = false,
   }) {
     return TradeQuoteState(
       symbol: symbol,
@@ -38,6 +42,7 @@ class TradeQuoteState extends TradeState {
       requiredMargin: requiredMargin ?? this.requiredMargin,
       freeMargin: freeMargin ?? this.freeMargin,
       isSubmitting: isSubmitting ?? this.isSubmitting,
+      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
     );
   }
 }

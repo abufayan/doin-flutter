@@ -3,6 +3,7 @@ import 'package:doin_fx/datamodel/pair_response.dart';
 import 'package:doin_fx/views/home/bloc/home_bloc.dart';
 import 'package:doin_fx/views/home/bloc/home_event.dart';
 import 'package:doin_fx/views/orders/helper/show_snackbar.dart';
+import 'package:doin_fx/views/trade/bloc/trade_event.dart';
 import 'package:doin_fx/views/trade/helper.dart';
 import 'package:doin_fx/views/watch/FavouritePairs/bloc/favourites_bloc.dart';
 import 'package:doin_fx/views/watch/FavouritePairs/bloc/favourites_state.dart';
@@ -184,6 +185,9 @@ class _FavouriteRowState extends State<_FavouriteRow> {
                             return;
                           }
 
+                          final tradeBloc = context.read<TradeBloc>();
+                          tradeBloc.add(TradeStarted(symbol: widget.item.symbol));
+
                           context.safeNavigate(() => showBuyPopup(context, symbol: widget.item.symbol));
                         },
                       ),
@@ -197,6 +201,9 @@ class _FavouriteRowState extends State<_FavouriteRow> {
                             showMarketClosedPopup(context);
                             return;
                           }
+
+                          final tradeBloc = context.read<TradeBloc>();
+                          tradeBloc.add(TradeStarted(symbol: widget.item.symbol));
 
                           context.safeNavigate(() => showSellPopup(context, symbol: widget.item.symbol));
                         },

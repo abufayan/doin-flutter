@@ -142,7 +142,17 @@ class OpenOrdersBloc extends Bloc<OpenOrdersEvent, OpenOrdersState> {
     final cleanSymbol = order.symbol.replaceAll('/', '').trim();
 
     final isGold = cleanSymbol == 'XAUUSD';
-    final contractSize = isGold ? 100 : 100000;
+    final isSilver = cleanSymbol == 'XAGUSD';
+    final isCrypto = (cleanSymbol == 'BTCUSD' || cleanSymbol == 'ETHUSD');
+    double contractSize = isGold ? 100 : 100000;
+
+    if (isSilver) {
+      contractSize = 5000;
+    }
+
+    if (isCrypto) {
+      contractSize = 1;
+    }
 
     /// 🔥 Correct broker logic
     final currentPrice = tick.last;
@@ -212,24 +222,20 @@ class OpenOrdersBloc extends Bloc<OpenOrdersEvent, OpenOrdersState> {
 
       add(LoadOpenOrders(showLoading: false));
     } on DioException catch (e) {
-        String errorMessage = 'Something went wrong';
+      String errorMessage = 'Something went wrong';
 
-        if (e.response != null) {
-          final data = e.response?.data;
+      if (e.response != null) {
+        final data = e.response?.data;
 
-          if (data is Map<String, dynamic>) {
-            errorMessage =
-                data['message'] ??
-                data['error'] ??
-                'Request failed';
-          } else {
-            errorMessage = 'Server error (${e.response?.statusCode})';
-          }
+        if (data is Map<String, dynamic>) {
+          errorMessage = data['message'] ?? data['error'] ?? 'Request failed';
+        } else {
+          errorMessage = 'Server error (${e.response?.statusCode})';
         }
+      }
 
-        emit(CloseTradeError(message: errorMessage));
-  }
-   catch (e) {
+      emit(CloseTradeError(message: errorMessage));
+    } catch (e) {
       emit(CloseTradeError(message: 'Error closing trade: $e'));
     }
   }
@@ -261,23 +267,20 @@ class OpenOrdersBloc extends Bloc<OpenOrdersEvent, OpenOrdersState> {
 
       emit(UpdateTradeSuccess(message: response.data['message']));
     } on DioException catch (e) {
-        String errorMessage = 'Something went wrong';
+      String errorMessage = 'Something went wrong';
 
-        if (e.response != null) {
-          final data = e.response?.data;
+      if (e.response != null) {
+        final data = e.response?.data;
 
-          if (data is Map<String, dynamic>) {
-            errorMessage =
-                data['message'] ??
-                data['error'] ??
-                'Request failed';
-          } else {
-            errorMessage = 'Server error (${e.response?.statusCode})';
-          }
+        if (data is Map<String, dynamic>) {
+          errorMessage = data['message'] ?? data['error'] ?? 'Request failed';
+        } else {
+          errorMessage = 'Server error (${e.response?.statusCode})';
         }
+      }
 
-        emit(CloseTradeError(message: errorMessage));
-  } catch (e) {
+      emit(CloseTradeError(message: errorMessage));
+    } catch (e) {
       emit(UpdateTradeError(message: 'Update failed: $e'));
     }
   }

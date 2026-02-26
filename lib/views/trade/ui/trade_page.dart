@@ -134,11 +134,12 @@ class BuySellSection extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-
                 if (!isForexMarketOpen()) {
                   showMarketClosedPopup(context);
                   return;
                 }
+
+                context.read<TradeBloc>().add(TradeStarted(symbol: symbol));
 
                 context.safeNavigate(() => showSellPopup(context, symbol: symbol));
               },
@@ -156,13 +157,14 @@ class BuySellSection extends StatelessWidget {
               ),
 
               onPressed: () {
-
                 if (!isForexMarketOpen()) {
                   showMarketClosedPopup(context);
                   return;
                 }
 
-                context.safeNavigate(() => showBuyPopup(context, symbol: symbol) );
+                context.read<TradeBloc>().add(TradeStarted(symbol: symbol));
+
+                context.safeNavigate(() => showBuyPopup(context, symbol: symbol));
               },
               child: const Text('BUY', style: TextStyle(color: Colors.white)),
             ),
