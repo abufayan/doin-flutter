@@ -125,7 +125,7 @@ void showSellPopup(BuildContext context, {required String symbol}) {
                             tabs: [
                               Tab(text: 'Market'),
                               Tab(text: 'Limit'),
-                              Tab(text: 'Advanced'),
+                              Tab(text: 'Pending'),
                             ],
                           ),
 
@@ -276,6 +276,7 @@ class _SellSubmitButton extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
                     disabledBackgroundColor: Colors.red.withOpacity(0.5),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   ),
                   onPressed: (isMarginInsufficient || isLotInvalid || isSubmitting)
                       ? null

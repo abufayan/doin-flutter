@@ -35,8 +35,9 @@ class _LotSizeFieldState extends State<LotSizeField> {
   void didUpdateWidget(covariant LotSizeField oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (oldWidget.initialLot != widget.initialLot) {
-      _controller.text = widget.initialLot.toStringAsFixed(2);
+    if (!_controller.selection.isValid &&
+        oldWidget.initialLot != widget.initialLot) {
+      _controller.text = widget.initialLot.toString();
     }
   }
 
@@ -103,9 +104,9 @@ class _LotSizeFieldState extends State<LotSizeField> {
                         widget.onChanged?.call(parsed); // null when empty
                       },
                       onEditingComplete: () {
-                        // When user finishes editing, enforce minimum and update display
                         final parsed = _parse(_controller.text);
-                        updateValue(parsed);
+                        field.didChange(parsed);
+                        widget.onChanged?.call(parsed);
                       },
                     ),
                   ),

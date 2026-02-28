@@ -26,6 +26,8 @@ class FavouritesBloc extends Bloc<FavouritesEvent, FavouritesBlocState> {
   String _currentSearchQuery = '';
 
   FavouritesBloc() : super(FavouritesBlocInitial()) {
+
+
     /// 🔥 Subscribe to global price stream
     _priceSub = _priceService.stream.listen((tick) {
       add(FavouritePriceUpdated(tick: tick));
@@ -35,6 +37,26 @@ class FavouritesBloc extends Bloc<FavouritesEvent, FavouritesBlocState> {
     on<FavouritePriceUpdated>(favouritePriceUpdated);
     on<RemoveFromFavourites>(removeFromFavourites);
     on<FavouritesSearchEvent>(_onSearch);
+  }
+
+  void _applyCachedPrices() {
+    final latest = _priceService.latestTicks;
+
+    String norm(String s) => s.replaceAll('/', '');
+
+    _favouritesCache = _favouritesCache.map((item) {
+      final tick = latest[norm(item.symbol)];
+
+      if (tick != null) {
+        return item.copyWith(
+          cmp: tick.last,
+          low: tick.bid,
+          high: tick.ask,
+        );
+      }
+
+      return item;
+    }).toList();
   }
 
   /* ---------------- LOAD ---------------- */
@@ -70,6 +92,9 @@ class FavouritesBloc extends Bloc<FavouritesEvent, FavouritesBlocState> {
       }
 
       _favouritesCache = favouritesResponse.favourites;
+
+      // Apply cached prices
+      _applyCachedPrices();
 
       _filterAndEmit(emit);
     } catch (e) {

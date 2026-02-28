@@ -140,6 +140,7 @@ class _OpenDetailScreenState extends State<OpenDetailScreen> with SingleTickerPr
           showSnackbar(context, state.message, success: false);
           context.read<OpenOrdersBloc>().add(LoadOpenOrders());
         }
+
         if (state is TradeClosed) {
           showSnackbar(context, state.message, success: true);
           context.read<OpenOrdersBloc>().add(LoadOpenOrders());
@@ -286,12 +287,13 @@ class _OpenDetailScreenState extends State<OpenDetailScreen> with SingleTickerPr
                 ),
               ),
               IconButton(
+                padding: EdgeInsets.only(top: 10),
                 onPressed: () {
                   context.read<OpenOrdersBloc>().add(
                     RemoveTpSl(tradeId: widget.order.tradeId.toString(), removeTp: true),
                   );
                 },
-                icon: Icon(Icons.delete),
+                icon: Icon(Icons.delete, size: 30, color: Colors.grey[600]),
               ),
             ],
           ),
@@ -306,12 +308,13 @@ class _OpenDetailScreenState extends State<OpenDetailScreen> with SingleTickerPr
                 ),
               ),
               IconButton(
+                padding: EdgeInsets.only(top: 10),
                 onPressed: () {
                   context.read<OpenOrdersBloc>().add(
                     RemoveTpSl(tradeId: widget.order.tradeId.toString(), removeSl: true),
                   );
                 },
-                icon: Icon(Icons.delete),
+                icon: Icon(Icons.delete, size: 30, color: Colors.grey[600]),
               ),
             ],
           ),

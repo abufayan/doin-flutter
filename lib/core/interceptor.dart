@@ -9,10 +9,7 @@ class AuthInterceptor extends Interceptor {
   static bool _isLoggingOut = false;
 
   @override
-  void onRequest(
-    RequestOptions options,
-    RequestInterceptorHandler handler,
-  ) async {
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     // Get token from secure storage
     final token = await TokenStorageService.getToken();
 
@@ -25,9 +22,10 @@ class AuthInterceptor extends Interceptor {
     options.headers['Content-Type'] = 'application/json';
 
     // Log request
+    print('options.uri: ${options.uri}');
     print('options.headers: ${options.headers}');
     print('options.data: ${options.data}');
-    print('options.uri: ${options.uri}');
+
 
     handler.next(options);
   }
@@ -56,27 +54,18 @@ class AuthInterceptor extends Interceptor {
     final bool isSessionExpired =
         response?.statusCode == 401 ||
         (response?.data is Map &&
-            response?.data['message']?.toString().toLowerCase().contains(
-                  'session expired',
-                ) ==
-                true);
+            response?.data['message']?.toString().toLowerCase().contains('session expired') == true);
 
     if (isSessionExpired && !_isLoggingOut) {
       _isLoggingOut = true;
 
       try {
-        AppLogger.auth(
-          'Session expired - clearing tokens and redirecting to login',
-        );
+        AppLogger.auth('Session expired - clearing tokens and redirecting to login');
         await TokenStorageService.clearTokens();
         // SocketManager.instance.disconnect();
         appRouter.replaceAll([const LoginOrRegisterRoute()]);
       } catch (e, st) {
-        AppLogger.error(
-          'Failed to handle session expiration',
-          exception: e,
-          stackTrace: st,
-        );
+        AppLogger.error('Failed to handle session expiration', exception: e, stackTrace: st);
       } finally {
         _isLoggingOut = false;
       }

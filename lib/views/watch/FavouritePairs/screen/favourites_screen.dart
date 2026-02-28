@@ -60,7 +60,8 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
           }
 
           if (state is FavouritesLoaded) {
-            if (state.favourites.isEmpty) {
+            if (state.originalFavourites.isEmpty) {
+              // User has no favourites at all
               return _FavouritesEmpty(refresh: _refreshFavourites);
             }
 
@@ -77,29 +78,35 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                       prefixIcon: const Icon(Icons.search),
                       contentPadding: const EdgeInsets.symmetric(vertical: 12),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                  ),
+                ),
+
+                if (state.favourites.isEmpty)
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        "No pairs found",
+                        style: TextStyle(color: Colors.grey.shade600),
+                      ),
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: RefreshIndicator(
+                      onRefresh: _refreshFavourites,
+                      child: ListView.separated(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        itemCount: state.favourites.length,
+                        separatorBuilder: (_, _) => const Divider(height: 1),
+                        itemBuilder: (context, index) {
+                          return _FavouriteRow(item: state.favourites[index]);
+                        },
                       ),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: RefreshIndicator(
-                    onRefresh: _refreshFavourites,
-                    child: ListView.separated(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      itemCount: state.favourites.length,
-                      separatorBuilder: (_, _) => const Divider(height: 1),
-                      itemBuilder: (context, index) {
-                        return _FavouriteRow(item: state.favourites[index]);
-                      },
-                    ),
-                  ),
-                ),
               ],
-            );
-          }
+            );          }
 
           return _FavouritesEmpty(refresh: _refreshFavourites);
         },

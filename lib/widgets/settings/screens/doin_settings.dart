@@ -2,6 +2,7 @@ import 'package:doin_fx/core/widgets/app_loaders.dart';
 import 'package:doin_fx/core/widgets/app_dialogs.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:doin_fx/core/routes/app_router.dart';
+import 'package:doin_fx/views/orders/helper/show_snackbar.dart';
 import 'package:doin_fx/widgets/settings/bloc/doin_settings_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,6 +17,7 @@ class DoinSettingsDrawer extends StatelessWidget {
         listenWhen: (p, c) => c is DoinSettingsActionState,
         listener: (context, state) {
           if (state is LoggedOutSuccessfully) {
+            showSnackbar(context, state.message  ?? 'Logged Out Successfully', success: true);
             context.router.replaceAll([LoginRoute()]);
           }
         },

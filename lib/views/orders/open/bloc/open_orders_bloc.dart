@@ -282,7 +282,7 @@ class OpenOrdersBloc extends Bloc<OpenOrdersEvent, OpenOrdersState> {
         }
       }
 
-      emit(CloseTradeError(message: errorMessage));
+      emit(UpdateTradeError(message: errorMessage));
     } catch (e) {
       emit(UpdateTradeError(message: 'Update failed: $e'));
     }

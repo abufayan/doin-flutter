@@ -130,7 +130,7 @@ class _PendingDetailScreenState extends State<PendingDetailScreen> with SingleTi
           context.read<PendingOrderBloc>().add(LoadPendingOrders());
         }
         if (state is UpdateTradeError) {
-          showSnackbar(context, state.message, success: true);
+          showSnackbar(context, state.message, success: false);
         }
       },
       builder: (context, state) {

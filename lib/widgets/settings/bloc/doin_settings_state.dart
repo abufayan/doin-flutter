@@ -18,5 +18,6 @@ sealed class DoinSettingsActionState extends DoinSettingsState {
 }
 
 final class LoggedOutSuccessfully extends DoinSettingsActionState {
-  LoggedOutSuccessfully();
+  final String? message;
+  LoggedOutSuccessfully({this.message});
 }

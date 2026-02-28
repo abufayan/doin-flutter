@@ -22,9 +22,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _submit(BuildContext context) {
     if (_formKey.currentState?.saveAndValidate() ?? false) {
-      context.read<ProfileBloc>().add(
-        OnSubmit(formData: _formKey.currentState!.value),
-      );
+      context.read<ProfileBloc>().add(OnSubmit(formData: _formKey.currentState!.value));
     }
   }
 
@@ -32,21 +30,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   final valueStyle = const TextStyle(fontSize: 14, color: Colors.black);
 
-  final hintStyle = TextStyle(
-    fontSize: 12,
-    color: Colors.grey.shade500,
-    fontStyle: FontStyle.italic,
-  );
+  final hintStyle = TextStyle(fontSize: 12, color: Colors.grey.shade500, fontStyle: FontStyle.italic);
 
   InputDecoration _decoration({String? errorText}) {
     return InputDecoration(
       filled: true,
       fillColor: Colors.grey.shade100,
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide.none,
-      ),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
       errorText: errorText,
     );
   }
@@ -66,16 +57,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         },
         builder: (context, state) {
           if (state is ProfileLoading) {
-            return AppLoaders.loadingIndicator();
+            return Scaffold(backgroundColor: Colors.white, body: AppLoaders.loadingIndicator());
           }
 
           if (state is ProfileLoaded) {
             _savedInitialValue = state.initialValue;
           }
 
-          final bool isLocked =
-              _savedInitialValue.isNotEmpty &&
-              _savedInitialValue['profile_completed'] == 1;
+          final bool isLocked = _savedInitialValue.isNotEmpty && _savedInitialValue['profile_completed'] == 1;
 
           final bool isReferralLocked =
               _savedInitialValue.isNotEmpty &&
@@ -84,19 +73,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           return Scaffold(
             backgroundColor: Colors.white,
-            appBar: AppBar(
-              title: const Text('Profile'),
-              backgroundColor: Colors.white,
-            ),
+            appBar: AppBar(title: const Text('Profile'), backgroundColor: Colors.white),
             body: SafeArea(
               child: FormBuilder(
                 key: _formKey,
                 initialValue: state is ProfileLoaded ? state.initialValue : {},
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -105,19 +88,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           radius: 40,
                           backgroundColor: Colors.orange,
                           child: Text(
-                            state is ProfileLoaded &&
-                                    (state.initialValue['username']
-                                            ?.toString()
-                                            .isNotEmpty ??
-                                        false)
-                                ? state.initialValue['username']
-                                      .toString()[0]
-                                      .toUpperCase()
+                            state is ProfileLoaded && (state.initialValue['username']?.toString().isNotEmpty ?? false)
+                                ? state.initialValue['username'].toString()[0].toUpperCase()
                                 : 'P',
-                            style: const TextStyle(
-                              fontSize: 32,
-                              color: Colors.white,
-                            ),
+                            style: const TextStyle(fontSize: 32, color: Colors.white),
                           ),
                         ),
                       ),
@@ -126,11 +100,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       _textField('id', 'Account ID', readOnly: true),
                       _textField('username', 'Name', readOnly: true),
                       _textField('email', 'Email Address', readOnly: true),
-                      _textField(
-                        'whatsapp_number',
-                        'WhatsApp Number',
-                        readOnly: true,
-                      ),
+                      _textField('whatsapp_number', 'WhatsApp Number', readOnly: true),
 
                       const SizedBox(height: 14),
                       Text('Date of Birth', style: labelStyle),
@@ -142,32 +112,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         format: DateFormat('dd/MM/yyyy'),
                         decoration: _decoration(),
                         validator: FormBuilderValidators.compose([
-                          FormBuilderValidators.required(
-                            errorText: 'DOB is required',
-                          ),
+                          FormBuilderValidators.required(errorText: 'DOB is required'),
                         ]),
                       ),
 
-                      _textField(
-                        'nationality',
-                        'Nationality',
-                        readOnly: isLocked ? true : false,
-                      ),
-                      _textField(
-                        'country',
-                        'Country of Residence',
-                        readOnly: isLocked ? true : false,
-                      ),
-                      _textField(
-                        'address',
-                        'Address',
-                        readOnly: isLocked ? true : false,
-                      ),
-                      _textField(
-                        'city',
-                        'City',
-                        readOnly: isLocked ? true : false,
-                      ),
+                      _textField('nationality', 'Nationality', readOnly: isLocked ? true : false),
+                      _textField('country', 'Country of Residence', readOnly: isLocked ? true : false),
+                      _textField('address', 'Address', readOnly: isLocked ? true : false),
+                      _textField('city', 'City', readOnly: isLocked ? true : false),
 
                       _dropdown(
                         name: 'employment_status',
@@ -218,13 +170,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         name: 'income_range',
                         label: 'Annual Income',
                         hint: 'Select annual income',
-                        items: const [
-                          'UNDER_20K',
-                          '20K_50K',
-                          '50K_100K',
-                          '100K_200K',
-                          'MORE_THAN_200K',
-                        ],
+                        items: const ['UNDER_20K', '20K_50K', '50K_100K', '100K_200K', 'MORE_THAN_200K'],
                         displayMap: const {
                           'UNDER_20K': '\$0 - \$20,000',
                           '20K_50K': '\$20,000 - \$50,000',
@@ -283,9 +229,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF6366F1),
                               foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                               elevation: 0,
                               padding: const EdgeInsets.symmetric(vertical: 14),
                             ),
@@ -296,11 +240,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 SizedBox(width: 10),
                                 Text(
                                   'Submit',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    letterSpacing: 0.5,
-                                  ),
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, letterSpacing: 0.5),
                                 ),
                               ],
                             ),
@@ -325,12 +265,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _textField(
-    String name,
-    String label, {
-    bool readOnly = false,
-    bool required = true,
-  }) {
+  Widget _textField(String name, String label, {bool readOnly = false, bool required = true}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: Column(
@@ -374,14 +309,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 //
                 hint: Text(hint, style: hintStyle),
                 decoration: _decoration(errorText: field.errorText),
-                items: items
-                    .map(
-                      (v) => DropdownMenuItem(
-                        value: v,
-                        child: Text(displayMap?[v] ?? v),
-                      ),
-                    )
-                    .toList(),
+                items: items.map((v) => DropdownMenuItem(value: v, child: Text(displayMap?[v] ?? v))).toList(),
                 onChanged: locked ? null : field.didChange,
               ),
             ],

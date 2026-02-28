@@ -11,6 +11,8 @@ import 'package:doin_fx/views/watch/AllPairs/bloc/all_pairs_bloc.dart';
 import 'package:doin_fx/views/watch/FavouritePairs/bloc/favourites_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'views/orders/pending/list/bloc/pending_order_bloc.dart';
 import 'views/orders/closed/list/bloc/closed_orders_bloc.dart';
@@ -19,6 +21,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await setupLocator();
   await getIt<MyAccountService>().initialize();
+  await Hive.initFlutter();
+  await Hive.openBox('price_cache');
 
   // await getIt<DeviceServices>().findPhysicalDevice();
   runApp(const DoinFx());

@@ -1,26 +1,63 @@
 import 'package:flutter/material.dart';
 
-void showSnackbar(BuildContext context, String message, {required bool success}) {
-  final messenger = ScaffoldMessenger.of(context);
+void showSnackbar(
+    BuildContext context,
+    String message, {
+      required bool success,
+    }) {
 
-  // 🔥 Clear previous snackbars
+
+  final messenger = ScaffoldMessenger.of(context);
   messenger.clearSnackBars();
 
+  // ✅ Dismiss keyboard first
+  // FocusManager.instance.primaryFocus?.unfocus();
 
-  ScaffoldMessenger.of(context).showSnackBar(
+
+  final Color bgColor = success
+      ?  Colors.green
+      :  Colors.red; // toned-down premium error red
+
+  final IconData icon =
+  success ? Icons.check_circle_rounded : Icons.error_rounded;
+
+  messenger.showSnackBar(
     SnackBar(
-      content: Row(
-        children: [
-          Icon(Icons.check_circle, color: Colors.white),
-          SizedBox(width: 12),
-          Expanded(child: Text(message, style: TextStyle(color: Colors.white, fontSize: 16))),
-        ],
-      ),
-      backgroundColor: success ? Colors.green : Colors.red,
+      backgroundColor: Colors.transparent,
+      elevation: 0,
       behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.all(16),
-      duration: Duration(seconds: 3),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      duration: const Duration(seconds: 3),
+      content: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: bgColor.withOpacity(0.25),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            )
+          ],
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: Colors.white, size: 22),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                message,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     ),
   );
 }

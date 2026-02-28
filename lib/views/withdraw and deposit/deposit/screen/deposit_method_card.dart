@@ -4,10 +4,10 @@ import 'package:doin_fx/core/routes/app_router.dart';
 import 'package:doin_fx/views/withdraw%20and%20deposit/deposit/datamodel/doposit_model.dart';
 import 'package:flutter/material.dart';
 
-class PaymentMethodCard extends StatelessWidget {
+class DepositMethodCard extends StatelessWidget {
   final DepositMethodConfig method;
 
-  const PaymentMethodCard({super.key, required this.method});
+  const DepositMethodCard({super.key, required this.method});
 
   @override
   Widget build(BuildContext context) {

@@ -29,14 +29,14 @@ import 'package:doin_fx/views/trade/ui/trade_page.dart';
 import 'package:doin_fx/views/profile/profile_page.dart';
 
 @RoutePage()
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(create: (_) => HomeBloc(), child: _HomeView());
@@ -525,12 +525,13 @@ class _PremiumBottomNavBar extends StatelessWidget {
                                     // Icon with scale animation
                                     AnimatedScale(
                                       duration: const Duration(milliseconds: 250),
-                                      scale: isActive ? 1.15 : 1.0,
+                                      scale: getScaleFactor(isActive, i),
                                       child: Image.asset(
                                         item.assetPath,
                                         width: 22,
                                         height: 22,
-                                        color: isActive ? const Color(0xFFFF8C00) : Colors.black87,
+                                        color: Colors.black,
+                                        // isActive ? const Color(0xFFFF8C00) : Colors.black87,
                                       ),
                                     ),
                                     const SizedBox(height: 4),
@@ -541,7 +542,12 @@ class _PremiumBottomNavBar extends StatelessWidget {
                                       style: TextStyle(
                                         fontSize: 11,
                                         fontWeight: FontWeight.w700,
-                                        color: isActive ? const Color(0xFFFF8C00) : Colors.black54,
+                                        color:
+
+                                        isActive ?
+                                        const Color(0xFFFF8C00) :
+                                        Colors.black54,
+
                                         letterSpacing: isActive ? 0.3 : 0,
                                         fontFamily: 'Poppins',
                                       ),
@@ -564,4 +570,11 @@ class _PremiumBottomNavBar extends StatelessWidget {
       ),
     );
   }
+}
+
+double getScaleFactor(bool isActive, int i) {
+  if (i == 2) {
+    return isActive ? 1.50 : 1.30;
+  }
+  return isActive ? 1.25 : 1.0;
 }
