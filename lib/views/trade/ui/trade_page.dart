@@ -3,6 +3,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:doin_fx/core/utils/nav_utils.dart';
 import 'package:doin_fx/views/trade/controllers/fcs_controller.dart';
+import 'package:doin_fx/views/trade/helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -132,9 +133,16 @@ class BuySellSection extends StatelessWidget {
                   borderRadius: BorderRadius.circular(6), // 👈 less rounded
                 ),
               ),
-              onPressed: () => context.safeNavigate(
-                () => showSellPopup(context, symbol: symbol),
-              ),
+              onPressed: () {
+                if (!isForexMarketOpen()) {
+                  showMarketClosedPopup(context);
+                  return;
+                }
+
+                context.read<TradeBloc>().add(TradeStarted(symbol: symbol));
+
+                context.safeNavigate(() => showSellPopup(context, symbol: symbol));
+              },
               child: const Text('SELL', style: TextStyle(color: Colors.white)),
             ),
           ),
@@ -148,9 +156,16 @@ class BuySellSection extends StatelessWidget {
                 ),
               ),
 
-              onPressed: () => context.safeNavigate(
-                () => showBuyPopup(context, symbol: symbol),
-              ),
+              onPressed: () {
+                if (!isForexMarketOpen()) {
+                  showMarketClosedPopup(context);
+                  return;
+                }
+
+                context.read<TradeBloc>().add(TradeStarted(symbol: symbol));
+
+                context.safeNavigate(() => showBuyPopup(context, symbol: symbol));
+              },
               child: const Text('BUY', style: TextStyle(color: Colors.white)),
             ),
           ),

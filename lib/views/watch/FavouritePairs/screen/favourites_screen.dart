@@ -3,6 +3,8 @@ import 'package:doin_fx/datamodel/pair_response.dart';
 import 'package:doin_fx/views/home/bloc/home_bloc.dart';
 import 'package:doin_fx/views/home/bloc/home_event.dart';
 import 'package:doin_fx/views/orders/helper/show_snackbar.dart';
+import 'package:doin_fx/views/trade/bloc/trade_event.dart';
+import 'package:doin_fx/views/trade/helper.dart';
 import 'package:doin_fx/views/watch/FavouritePairs/bloc/favourites_bloc.dart';
 import 'package:doin_fx/views/watch/FavouritePairs/bloc/favourites_state.dart';
 import 'package:doin_fx/views/trade/bloc/trade_bloc.dart';
@@ -58,7 +60,8 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
           }
 
           if (state is FavouritesLoaded) {
-            if (state.favourites.isEmpty) {
+            if (state.originalFavourites.isEmpty) {
+              // User has no favourites at all
               return _FavouritesEmpty(refresh: _refreshFavourites);
             }
 
@@ -75,29 +78,35 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                       prefixIcon: const Icon(Icons.search),
                       contentPadding: const EdgeInsets.symmetric(vertical: 12),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                  ),
+                ),
+
+                if (state.favourites.isEmpty)
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        "No pairs found",
+                        style: TextStyle(color: Colors.grey.shade600),
+                      ),
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: RefreshIndicator(
+                      onRefresh: _refreshFavourites,
+                      child: ListView.separated(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        itemCount: state.favourites.length,
+                        separatorBuilder: (_, _) => const Divider(height: 1),
+                        itemBuilder: (context, index) {
+                          return _FavouriteRow(item: state.favourites[index]);
+                        },
                       ),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: RefreshIndicator(
-                    onRefresh: _refreshFavourites,
-                    child: ListView.separated(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      itemCount: state.favourites.length,
-                      separatorBuilder: (_, _) => const Divider(height: 1),
-                      itemBuilder: (context, index) {
-                        return _FavouriteRow(item: state.favourites[index]);
-                      },
-                    ),
-                  ),
-                ),
               ],
-            );
-          }
+            );          }
 
           return _FavouritesEmpty(refresh: _refreshFavourites);
         },
@@ -178,6 +187,14 @@ class _FavouriteRowState extends State<_FavouriteRow> {
                         color: Colors.green,
                         symbol: widget.item.symbol,
                         onTap: () {
+                          if (!isForexMarketOpen()) {
+                            showMarketClosedPopup(context);
+                            return;
+                          }
+
+                          final tradeBloc = context.read<TradeBloc>();
+                          tradeBloc.add(TradeStarted(symbol: widget.item.symbol));
+
                           context.safeNavigate(() => showBuyPopup(context, symbol: widget.item.symbol));
                         },
                       ),
@@ -187,6 +204,14 @@ class _FavouriteRowState extends State<_FavouriteRow> {
                         color: Colors.red,
                         symbol: widget.item.symbol,
                         onTap: () {
+                          if (!isForexMarketOpen()) {
+                            showMarketClosedPopup(context);
+                            return;
+                          }
+
+                          final tradeBloc = context.read<TradeBloc>();
+                          tradeBloc.add(TradeStarted(symbol: widget.item.symbol));
+
                           context.safeNavigate(() => showSellPopup(context, symbol: widget.item.symbol));
                         },
                       ),

@@ -30,8 +30,7 @@ final String updateDemoWallet = 'api/demoaccount/demo-account';
 // Account type switching (LIVE / DEMO)
 // By default a registered user will be in real account,
 // and this endpoint is used to switch back and forth.
-final String switchAccountType =
-    'api/demoaccount/demo/account-type/'; // + userId
+final String switchAccountType = 'api/demoaccount/demo/account-type/'; // + userId
 
 // General values / config (min deposit, withdrawal, etc.)
 final String getMinimummDepsitValues = 'api/values/getdata';
@@ -87,17 +86,17 @@ final String getWithdrawalList = 'api/withdrawal/user/'; // + userId
 /* ===================== DEMO ACCOUNT ENDPOINTS ===================== */
 
 // Demo Orders
-final String demoPlaceOrder = 'api/demo/order/place'; 
+final String demoPlaceOrder = 'api/demo/order/place';
 final String demoGetTrades = 'api/demo/order';
 final String demoCloseAllPositions = 'api/demo/order/close/all/positions';
-final String demoCloseAllProfitPositions =
-    'api/demo/order/close/all/profit/positions';
-final String demoCloseAllLossPositions =
-    'api/demo/order/close/all/loss/positions';
+final String demoCloseAllProfitPositions = 'api/demo/order/close/all/profit/positions';
+final String demoCloseAllLossPositions = 'api/demo/order/close/all/loss/positions';
 
 // Demo Favourites
 final String fetchDemoFavouritePairs = 'api/demofavourites/user/'; // + userId
-final String addtoDemoFavourite =
-    'api/demofavourites/add'; // body: user_id, symbol
-final String removeDemoFavourite =
-    'api/demofavourites/remove'; // body: user_id, symbol
+final String addtoDemoFavourite = 'api/demofavourites/add'; // body: user_id, symbol
+final String removeDemoFavourite = 'api/demofavourites/remove'; // body: user_id, symbol
+
+// Remove TP/SL :
+final String removeRealTpSl = 'api/order/remove';
+final String removeDemoTpSl = 'api/demo/order/remove';

@@ -39,96 +39,106 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
 
         return Scaffold(
           appBar: AppBar(leading: const BackButton(), title: const Text('Help Center')),
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _headerCard(),
+          body: RefreshIndicator(
+            onRefresh: () async {
+              context.read<SupportBloc>().add(LoadSupportOverview());
+              await Future.delayed(const Duration(milliseconds: 1500));
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _headerCard(),
 
-                const SizedBox(height: 24),
-                const Text('Contact Us', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 24),
+                  const Text('Contact Us', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
 
-                const SizedBox(height: 12),
-                SizedBox(
-                  height: 40,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1E6BFF),
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 40,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF1E6BFF),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                      ),
+                      onPressed: () {
+                        context.router.safePush(TicketTypeRoute());
+                      },
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.add, size: 16),
+                          SizedBox(width: 6),
+                          Text('Open a ticket', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+                        ],
+                      ),
                     ),
-                    onPressed: () {
-                      context.router.safePush(TicketTypeRoute());
-                    },
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
+                  ),
+
+                  const SizedBox(height: 12),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF2F2F2), // light grey background
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey.shade400, width: 1),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.add, size: 16),
-                        SizedBox(width: 6),
-                        Text('Open a ticket', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+                        const Text(
+                          'Still Have Questions?',
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(height: 6),
+                        const Text(
+                          'Reach out to our support team directly at:',
+                          style: TextStyle(fontSize: 12, color: Colors.black87),
+                        ),
+                        const SizedBox(height: 12),
+
+                        /// WhatsApp row
+                        Row(
+                          children: [
+                            const Icon(Icons.phone, size: 14, color: Colors.black87),
+                            const SizedBox(width: 8),
+                            Text(
+                              '${contactData?.whatsappNumber ?? '+00 1234567890'} (WhatsApp Number)',
+                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 8),
+
+                        /// Email row
+                        Row(
+                          children: [
+                            const Icon(Icons.mail_outline, size: 14, color: Colors.black87),
+                            const SizedBox(width: 8),
+                            Text(
+                              '${contactData?.email ?? 'contact@doinfx.com'} (E-mail)',
+                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
-                ),
 
-                const SizedBox(height: 12),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF2F2F2), // light grey background
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey.shade400, width: 1),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Still Have Questions?', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-                      const SizedBox(height: 6),
-                      const Text(
-                        'Reach out to our support team directly at:',
-                        style: TextStyle(fontSize: 12, color: Colors.black87),
-                      ),
-                      const SizedBox(height: 12),
+                  const SizedBox(height: 32),
+                  const Text('My Tickets', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
 
-                      /// WhatsApp row
-                      Row(
-                        children: [
-                          const Icon(Icons.phone, size: 14, color: Colors.black87),
-                          const SizedBox(width: 8),
-                          Text(
-                            '${contactData?.whatsappNumber ?? '+00 1234567890'} (WhatsApp Number)',
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 8),
-
-                      /// Email row
-                      Row(
-                        children: [
-                          const Icon(Icons.mail_outline, size: 14, color: Colors.black87),
-                          const SizedBox(width: 8),
-                          Text(
-                            '${contactData?.email ?? 'contact@doinfx.com'} (E-mail)',
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 32),
-                const Text('My Tickets', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-
-                const SizedBox(height: 12),
-                _ticketList(state),
-              ],
+                  const SizedBox(height: 12),
+                  _ticketList(state),
+                ],
+              ),
             ),
           ),
         );

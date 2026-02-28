@@ -83,12 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(height: 40),
-                  Row( 
-                    mainAxisAlignment: .center,
-                    children: [
-                      DoinDesign(),
-                    ],
-                  ),
+                  Row(mainAxisAlignment: .center, children: [DoinDesign()]),
                   const SizedBox(height: 100),
                   Align(
                     alignment: Alignment.centerLeft,
@@ -105,13 +100,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Text('Login to continue to your account.',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontFamily: 'Poppins'
-                      )
-                  )
-                  ,
+                  const Text(
+                    'Login to continue to your account.',
+                    style: TextStyle(fontSize: 12, fontFamily: 'Poppins'),
+                  ),
                   const SizedBox(height: 40),
                   const Text('User Email', style: TextStyle(fontSize: 13)),
                   const SizedBox(height: 6),

@@ -2,6 +2,7 @@ import 'package:doin_fx/core/widgets/app_loaders.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:doin_fx/core/routes/app_router.dart';
 import 'package:doin_fx/views/auth/bloc/auth_bloc.dart';
+import 'package:doin_fx/widgets/doin_design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -58,44 +59,14 @@ class _SplashScreenState extends State<SplashScreen> {
           body: SafeArea(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: .center,
               children: [
                 // Logo + App name
-                Center(
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 72,
-                        width: 72,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFFF9800),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Center(
-                          child: Text(
-                            'D',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      const Text(
-                        'Doin',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFFFF9800),
-                        ),
-                      ),
-                      const Text(
-                        'Mobi 1.0',
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
-                      ),
-                    ],
-                  ),
+                Row(
+                  mainAxisAlignment: .center,
+                  children: [
+                    DoinDesign()
+                  ],
                 ),
 
                 const SizedBox(height: 40),

@@ -33,7 +33,7 @@ class DoinSettingsBloc extends Bloc<DoinSettingsEvent, DoinSettingsState> {
           await TokenStorageService.clearTokens();
 
           // Emit success state
-          emit(LoggedOutSuccessfully());
+          emit(LoggedOutSuccessfully(message: data['message']));
         } else {
           // Even if API fails, clear local tokens
           await TokenStorageService.clearTokens();

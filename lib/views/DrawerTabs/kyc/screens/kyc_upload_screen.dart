@@ -34,10 +34,25 @@ class _KycScreenState extends State<KycScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return BlocProvider(
       create: (_) => KycBloc()..add(GetKycData()),
       child: Scaffold(
-        appBar: AppBar(leading: const BackButton(), title: const Text('KYC')),
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+            leading: const BackButton(),
+            title: const Text('KYC'),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(2),
+            child: Container(
+              height: 4,
+              color: const Color(0xFFFFE3C6), //your yellow/orange
+            ),
+          ),
+        ),
+
+
         body: BlocConsumer<KycBloc, KycState>(
           buildWhen: (previous, current) => current is! KyccActionState,
           listenWhen: (previous, current) => current is KyccActionState,
@@ -311,8 +326,10 @@ class _KycScreenState extends State<KycScreen> {
           const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.verified_user, size: 16, color: Colors.grey),
+              // Icon(Icons.verified_user, size: 16, color: Colors.blue),
+              SecureShieldIcon(size: 16),
               SizedBox(width: 6),
+
               Text(
                 'All data is encrypted for security purpose',
                 style: TextStyle(fontSize: 12),
@@ -491,3 +508,73 @@ class _KycScreenState extends State<KycScreen> {
     );
   }
 }
+
+
+
+// import 'package:flutter/material.dart';
+
+class SecureShieldIcon extends StatelessWidget {
+  final double size;
+
+  const SecureShieldIcon({super.key, this.size = 48});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: size,
+      height: size,
+      child: CustomPaint(
+        painter: _ShieldPainter(),
+      ),
+    );
+  }
+}
+
+class _ShieldPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final outerPaint = Paint()
+      ..color = const Color(0xFF4F6FAF); // darker blue
+
+    final innerPaint = Paint()
+      ..color = const Color(0xFF6EC1E4); // lighter blue
+
+    final checkPaint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = size.width * 0.08
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    final path = Path();
+    path.moveTo(size.width * 0.5, 0);
+    path.lineTo(size.width, size.height * 0.25);
+    path.lineTo(size.width * 0.85, size.height);
+    path.lineTo(size.width * 0.15, size.height);
+    path.lineTo(0, size.height * 0.25);
+    path.close();
+
+    canvas.drawPath(path, outerPaint);
+
+    final innerPath = Path();
+    innerPath.moveTo(size.width * 0.5, size.height * 0.1);
+    innerPath.lineTo(size.width * 0.9, size.height * 0.3);
+    innerPath.lineTo(size.width * 0.75, size.height * 0.9);
+    innerPath.lineTo(size.width * 0.25, size.height * 0.9);
+    innerPath.lineTo(size.width * 0.1, size.height * 0.3);
+    innerPath.close();
+
+    canvas.drawPath(innerPath, innerPaint);
+
+    // Checkmark
+    final checkPath = Path();
+    checkPath.moveTo(size.width * 0.3, size.height * 0.55);
+    checkPath.lineTo(size.width * 0.45, size.height * 0.7);
+    checkPath.lineTo(size.width * 0.7, size.height * 0.4);
+
+    canvas.drawPath(checkPath, checkPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+

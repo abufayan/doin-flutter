@@ -32,8 +32,7 @@ class _MyAccountState extends State<MyAccount> {
   Widget build(BuildContext context) {
     return BlocConsumer<MyAccountBloc, AccountBlocState>(
       listenWhen: (previous, current) => current is AuthBlocActionState,
-      buildWhen: (previous, current) =>
-          current is MyAccountDataLoaded || current is AccountBlocLoading,
+      buildWhen: (previous, current) => current is MyAccountDataLoaded || current is AccountBlocLoading,
 
       listener: (context, state) {
         if (state is AccountBlocFailure) {
@@ -100,36 +99,20 @@ class _UserInfoCard extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFF6EE),
-        borderRadius: BorderRadius.circular(10),
-      ),
+      decoration: BoxDecoration(color: const Color(0xFFFFF6EE), borderRadius: BorderRadius.circular(10)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            'Account ID : ${myAccount.user?.userId}',
-            style: TextStyle(fontWeight: FontWeight.w600),
-          ),
+          Text('Account ID : ${myAccount.user?.userId}', style: TextStyle(fontWeight: FontWeight.w600)),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(6),
-            ),
+            decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(6)),
             child: Row(
               children: [
-                const Text(
-                  'KYC : ',
-                  style: TextStyle(color: Colors.white, fontSize: 12),
-                ),
+                const Text('KYC : ', style: TextStyle(color: Colors.white, fontSize: 12)),
                 Text(
                   kycVerified ? 'Verified' : 'Not Verified',
-                  style: const TextStyle( 
-                    color: Colors.orange,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: const TextStyle(color: Colors.orange, fontSize: 12, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(width: 4),
                 const Icon(Icons.verified, size: 14, color: Colors.orange),
@@ -154,18 +137,12 @@ class _BalanceCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFF3E8),
-        borderRadius: BorderRadius.circular(14),
-      ),
+      decoration: BoxDecoration(color: const Color(0xFFFFF3E8), borderRadius: BorderRadius.circular(14)),
       child: Column(
         children: [
           const Text('Balance', style: TextStyle(color: Colors.black54)),
           const SizedBox(height: 8),
-          Text(
-            balance,
-            style: const TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
-          ),
+          Text(balance, style: const TextStyle(fontSize: 34, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -241,10 +218,7 @@ class _ActionButton extends StatelessWidget {
         onPressed: onTap,
         child: Text(
           title,
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
         ),
       ),
     );
@@ -286,11 +260,7 @@ class _PromoBanner extends StatelessWidget {
             height: 180,
             color: const Color(0xFFFFF3E8),
             alignment: Alignment.center,
-            child: const Icon(
-              Icons.image_not_supported_outlined,
-              color: Colors.grey,
-              size: 40,
-            ),
+            child: const Icon(Icons.image_not_supported_outlined, color: Colors.grey, size: 40),
           );
         },
       ),
@@ -308,10 +278,7 @@ class _ReferEarnSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Refer & Earn',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
+        const Text('Refer & Earn', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 6),
         const Text('Earn 50% Revenue Sharing Instantly!'),
         const SizedBox(height: 14),
@@ -319,10 +286,7 @@ class _ReferEarnSection extends StatelessWidget {
         const _InfoTile(title: 'Referral Code', value: 'IB 202409'),
         const SizedBox(height: 12),
         Center(
-          child: OutlinedButton(
-            onPressed: () {},
-            child: const Text('IB Panel'),
-          ),
+          child: OutlinedButton(onPressed: () {}, child: const Text('IB Panel')),
         ),
       ],
     );
@@ -340,10 +304,7 @@ class _InfoTile extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFF8F2),
-        borderRadius: BorderRadius.circular(8),
-      ),
+      decoration: BoxDecoration(color: const Color(0xFFFFF8F2), borderRadius: BorderRadius.circular(8)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

@@ -33,72 +33,65 @@ class _OptionalPriceFieldState extends State<OptionalPriceField> {
   Widget build(BuildContext context) {
     return FormBuilderField<String>(
       name: widget._name,
-      validator: FormBuilderValidators.compose([
-        FormBuilderValidators.numeric(),
-        FormBuilderValidators.min(0),
-      ]),
+      validator: FormBuilderValidators.compose([FormBuilderValidators.numeric(), FormBuilderValidators.min(0)]),
       builder: (field) {
         // Sync controller with field value
         if (_controller.text != field.value) {
           _controller.text = field.value ?? '';
         }
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(widget._label,
-                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
-            const SizedBox(height: 6),
-            Container(
-              height: 48,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        isDense: true,
-                        hintText: '0.00',
+        return Padding(
+          padding: const EdgeInsets.only(top: 24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(widget._label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+              const SizedBox(height: 6),
+              Container(
+                height: 48,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _controller,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        decoration: const InputDecoration(border: InputBorder.none, isDense: true, hintText: '0.00'),
+                        onChanged: field.didChange,
                       ),
-                      onChanged: field.didChange,
                     ),
-                  ),
-                  StepButton(
-                    icon: Icons.remove,
-                    onTap: () {
-                      final current = double.tryParse(field.value ?? '') ?? 0;
-                      final v = (current - 0.1).clamp(0, double.infinity);
-                      field.didChange(v.toStringAsFixed(2));
-                    },
-                  ),
-                  const SizedBox(width: 6),
-                  StepButton(
-                    icon: Icons.add,
-                    onTap: () {
-                      final current = double.tryParse(field.value ?? '') ?? 0;
-                      final v = current + 0.1;
-                      field.didChange(v.toStringAsFixed(2));
-                    },
-                  ),
-                ],
+                    StepButton(
+                      icon: Icons.remove,
+                      onTap: () {
+                        final current = double.tryParse(field.value ?? '') ?? 0;
+                        final v = (current - 0.1).clamp(0, double.infinity);
+                        field.didChange(v.toStringAsFixed(2));
+                      },
+                    ),
+                    const SizedBox(width: 6),
+                    StepButton(
+                      icon: Icons.add,
+                      onTap: () {
+                        final current = double.tryParse(field.value ?? '') ?? 0;
+                        final v = current + 0.1;
+                        field.didChange(v.toStringAsFixed(2));
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-            if (field.errorText != null) ...[
-              const SizedBox(height: 4),
-              Text(field.errorText!,
-                  style: const TextStyle(color: Colors.red, fontSize: 12)),
+              if (field.errorText != null) ...[
+                const SizedBox(height: 4),
+                Text(field.errorText!, style: const TextStyle(color: Colors.red, fontSize: 12)),
+              ],
             ],
-          ],
+          ),
         );
       },
     );
   }
 }
-

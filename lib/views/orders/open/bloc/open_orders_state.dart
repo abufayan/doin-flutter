@@ -65,6 +65,13 @@ class UpdateTradeSuccess extends OpenOrdersActionState {
   UpdateTradeSuccess({required this.message});
 }
 
+class RemoveTpSlSuccess extends OpenOrdersActionState {
+  final String message;
+  final bool removedTp;
+  final bool removedSl;
+  RemoveTpSlSuccess({required this.message, this.removedTp = false, this.removedSl = false});
+}
+
 class UpdateTradeError extends OpenOrdersActionState {
   final String message;
   UpdateTradeError({required this.message});

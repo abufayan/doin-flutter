@@ -11,11 +11,11 @@ class DepositMethodsScreen extends StatelessWidget {
   const DepositMethodsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) { 
+  Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => DepositMethodsBloc()..add(LoadDepositMethods()),
       child: const _DepositMethodsView(),
-    ); 
+    );
   }
 }
 
@@ -97,7 +97,7 @@ class _DepositMethodsView extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final apiMethod = state.methods[index];
                   final config = DepositMethodConfig.fromApiData(apiMethod);
-                  return PaymentMethodCard(method: config);
+                  return DepositMethodCard(method: config);
                 },
               ),
             );

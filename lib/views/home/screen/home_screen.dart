@@ -29,14 +29,14 @@ import 'package:doin_fx/views/trade/ui/trade_page.dart';
 import 'package:doin_fx/views/profile/profile_page.dart';
 
 @RoutePage()
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(create: (_) => HomeBloc(), child: _HomeView());
@@ -64,36 +64,31 @@ class _HomeViewState extends State<_HomeView> {
         }
       },
       child: BlocConsumer<HomeBloc, HomeState>(
-        listener: (BuildContext context, HomeState state) {
+        listener: (BuildContext context, HomeState state) async {
           // Show snackbar on account switch
-          if (state is AccountSwitched) { 
+          if (state is AccountSwitched) {
             if (state.errorMessage != null) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   behavior: SnackBarBehavior.floating,
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   content: Text(state.errorMessage!),
                   backgroundColor: Colors.red,
                   duration: const Duration(seconds: 3),
                 ),
               );
             } else if (!state.isLoading) {
+              // Reload all relevant BLoCs to reflect the new account environment immediately
+              context.read<MyAccountBloc>().add(LoadMyAccount());
+
+              // await Future.delayed(const Duration(milliseconds: 500));
+
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   behavior: SnackBarBehavior.floating,
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   backgroundColor: Colors.green.shade600,
                   duration: const Duration(seconds: 2),
                   content: Row(
@@ -103,18 +98,13 @@ class _HomeViewState extends State<_HomeView> {
                       Expanded(
                         child: Text(
                           'Switched to ${state.accountType == AccountType.live ? 'Real' : 'Demo'} account',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
                         ),
                       ),
                     ],
                   ),
                 ),
               );
-              // Reload all relevant BLoCs to reflect the new account environment immediately
-              context.read<MyAccountBloc>().add(LoadMyAccount());
             }
           }
         },
@@ -135,9 +125,7 @@ class _HomeViewState extends State<_HomeView> {
                 // Navigator.of(context).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(
-                      state.order.message ?? 'Buy order placed successfully',
-                    ),
+                    content: Text(state.order.message ?? 'Buy order placed successfully'),
                     backgroundColor: Colors.green,
                     duration: const Duration(seconds: 2),
                   ),
@@ -148,9 +136,7 @@ class _HomeViewState extends State<_HomeView> {
                 // Navigator.of(context).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(
-                      state.order.message ?? 'Sell order placed successfully',
-                    ),
+                    content: Text(state.order.message ?? 'Sell order placed successfully'),
                     backgroundColor: Colors.green,
                     duration: const Duration(seconds: 2),
                   ),
@@ -172,10 +158,7 @@ class _HomeViewState extends State<_HomeView> {
               child: Scaffold(
                 backgroundColor: Colors.white,
                 drawer: Drawer(
-                  child: BlocProvider(
-                    create: (_) => DoinSettingsBloc(),
-                    child: _DoinSettingsDrawerWithLogout(),
-                  ),
+                  child: BlocProvider(create: (_) => DoinSettingsBloc(), child: _DoinSettingsDrawerWithLogout()),
                 ),
                 appBar: AppBar(
                   backgroundColor: Colors.white,
@@ -191,34 +174,20 @@ class _HomeViewState extends State<_HomeView> {
                   ),
                   actions: [
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       child: GestureDetector(
                         onTap: () {
                           final bloc = context.read<HomeBloc>();
-                          _showSwitchAccountDialog(
-                            context,
-                            currentType: state.accountType,
-                            homeBloc: bloc,
-                          );
+                          _showSwitchAccountDialog(context, currentType: state.accountType, homeBloc: bloc);
                         },
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 6,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
                           decoration: BoxDecoration(
-                            color: state.accountType == AccountType.live
-                                ? Colors.green.shade100
-                                : Colors.blue.shade100,
+                            color: state.accountType == AccountType.live ? Colors.green.shade100 : Colors.blue.shade100,
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
-                            state.accountType == AccountType.live
-                                ? 'Real'
-                                : 'Demo',
+                            state.accountType == AccountType.live ? 'Real' : 'Demo',
                             style: TextStyle(
                               color: state.accountType == AccountType.live
                                   ? Colors.green.shade700
@@ -244,10 +213,7 @@ class _HomeViewState extends State<_HomeView> {
                   ],
                 ),
                 endDrawer: Drawer(
-                  child: BlocProvider(
-                    create: (_) => DoinSettingsBloc(),
-                    child: _DoinSettingsDrawerWithLogout(),
-                  ),
+                  child: BlocProvider(create: (_) => DoinSettingsBloc(), child: _DoinSettingsDrawerWithLogout()),
                 ),
                 body: IndexedStack(index: index, children: pages),
                 bottomNavigationBar: _PremiumBottomNavBar(
@@ -263,7 +229,7 @@ class _HomeViewState extends State<_HomeView> {
                     }
 
                     if (i == 1) {
-                      context.read<FavouritesBloc>().add(LoadFavouritesEvent()); 
+                      context.read<FavouritesBloc>().add(LoadFavouritesEvent());
                     }
 
                     if (i == 0) {
@@ -289,10 +255,7 @@ class _DoinSettingsDrawerWithLogout extends StatelessWidget {
         child: Column(
           children: [
             Expanded(
-              child: BlocProvider(
-                create: (_) => DoinSettingsBloc(),
-                child: const DoinSettingsDrawer(),
-              ),
+              child: BlocProvider(create: (_) => DoinSettingsBloc(), child: const DoinSettingsDrawer()),
             ),
             // Logout button at bottom
             // Padding(
@@ -320,11 +283,7 @@ class _DoinSettingsDrawerWithLogout extends StatelessWidget {
   }
 }
 
-void _showSwitchAccountDialog(
-  BuildContext context, {
-  required AccountType currentType,
-  required HomeBloc homeBloc,
-}) {
+void _showSwitchAccountDialog(BuildContext context, {required AccountType currentType, required HomeBloc homeBloc}) {
   final isReal = currentType == AccountType.live;
 
   showDialog(
@@ -343,16 +302,9 @@ void _showSwitchAccountDialog(
               /// Header
               Row(
                 children: [
-                  const Icon(
-                    Icons.swap_horiz_rounded,
-                    color: Colors.orange,
-                    size: 24,
-                  ),
+                  const Icon(Icons.swap_horiz_rounded, color: Colors.orange, size: 24),
                   const SizedBox(width: 8),
-                  const Text(
-                    'Switch Account',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                  ),
+                  const Text('Switch Account', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                 ],
               ),
 
@@ -422,10 +374,7 @@ Widget _buildEnhancedAccountOption({
         decoration: BoxDecoration(
           color: isSelected ? color.withOpacity(0.08) : Colors.grey.shade100,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: isSelected ? color : Colors.grey.shade300,
-            width: isSelected ? 1.5 : 1,
-          ),
+          border: Border.all(color: isSelected ? color : Colors.grey.shade300, width: isSelected ? 1.5 : 1),
         ),
         child: Row(
           children: [
@@ -436,10 +385,7 @@ Widget _buildEnhancedAccountOption({
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: isSelected ? color : Colors.transparent,
-                border: Border.all(
-                  color: isSelected ? color : Colors.grey.shade400,
-                  width: 1.5,
-                ),
+                border: Border.all(color: isSelected ? color : Colors.grey.shade400, width: 1.5),
               ),
             ),
 
@@ -459,10 +405,7 @@ Widget _buildEnhancedAccountOption({
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(fontSize: 13, color: Colors.black54),
-                  ),
+                  Text(subtitle, style: const TextStyle(fontSize: 13, color: Colors.black54)),
                 ],
               ),
             ),
@@ -487,26 +430,11 @@ class _NavItemData {
 }
 
 const _kNavItems = [
-  _NavItemData(
-    assetPath: 'assets/images/bottomTabs/akar-icons_dashboard.png',
-    label: 'Dashboard',
-  ),
-  _NavItemData(
-    assetPath: 'assets/images/bottomTabs/solar_bookmark-line-duotone.png',
-    label: 'Watch',
-  ),
-  _NavItemData(
-    assetPath: 'assets/images/bottomTabs/proicons_note.png',
-    label: 'Orders',
-  ),
-  _NavItemData(
-    assetPath: 'assets/images/bottomTabs/solar_chart-outline.png',
-    label: 'Trade',
-  ),
-  _NavItemData(
-    assetPath: 'assets/images/bottomTabs/gg_profile.png',
-    label: 'Profile',
-  ),
+  _NavItemData(assetPath: 'assets/images/bottomTabs/akar-icons_dashboard.png', label: 'Dashboard'),
+  _NavItemData(assetPath: 'assets/images/bottomTabs/solar_bookmark-line-duotone.png', label: 'Watch'),
+  _NavItemData(assetPath: 'assets/images/bottomTabs/proicons_note.png', label: 'Orders'),
+  _NavItemData(assetPath: 'assets/images/bottomTabs/solar_chart-outline.png', label: 'Trade'),
+  _NavItemData(assetPath: 'assets/images/bottomTabs/gg_profile.png', label: 'Profile'),
 ];
 
 class _PremiumBottomNavBar extends StatelessWidget {
@@ -560,24 +488,24 @@ class _PremiumBottomNavBar extends StatelessWidget {
                   return Stack(
                     children: [
                       // ── Animated pill indicator ──
-                      AnimatedPositioned(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeOutCubic,
-                        left: itemWidth * currentIndex + (itemWidth - 48) / 2,
-                        top: 0,
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeOutCubic,
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: const Color(
-                              0xFFFF8C00,
-                            ).withValues(alpha: 0.10),
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                      ),
+                      // AnimatedPositioned(
+                      //   duration: const Duration(milliseconds: 300),
+                      //   curve: Curves.easeOutCubic,
+                      //   left: itemWidth * currentIndex + (itemWidth - 48) / 2,
+                      //   top: 0,
+                      //   child: AnimatedContainer(
+                      //     duration: const Duration(milliseconds: 300),
+                      //     curve: Curves.easeOutCubic,
+                      //     width: 48,
+                      //     height: 48,
+                      //     decoration: BoxDecoration(
+                      //       color: const Color(
+                      //         0xFFFF8C00,
+                      //       ).withValues(alpha: 0.10),
+                      //       borderRadius: BorderRadius.circular(14),
+                      //     ),
+                      //   ),
+                      // ),
 
                       // ── Tab items ──
                       Row(
@@ -596,34 +524,32 @@ class _PremiumBottomNavBar extends StatelessWidget {
                                   children: [
                                     // Icon with scale animation
                                     AnimatedScale(
-                                      duration: const Duration(
-                                        milliseconds: 250,
-                                      ),
-                                      scale: isActive ? 1.15 : 1.0,
+                                      duration: const Duration(milliseconds: 250),
+                                      scale: getScaleFactor(isActive, i),
                                       child: Image.asset(
                                         item.assetPath,
-                                        width: 22, 
+                                        width: 22,
                                         height: 22,
-                                        color: isActive
-                                            ? const Color(0xFFFF8C00)
-                                            : Colors.black87,
+                                        color: Colors.black,
+                                        // isActive ? const Color(0xFFFF8C00) : Colors.black87,
                                       ),
                                     ),
                                     const SizedBox(height: 4),
 
                                     // Label with opacity + color animation
                                     AnimatedDefaultTextStyle(
-                                      duration: const Duration(
-                                        milliseconds: 250,
-                                      ),
+                                      duration: const Duration(milliseconds: 250),
                                       style: TextStyle(
                                         fontSize: 11,
                                         fontWeight: FontWeight.w700,
-                                        color: isActive 
-                                            ? const Color(0xFFFF8C00)
-                                            : Colors.black54,
+                                        color:
+
+                                        isActive ?
+                                        const Color(0xFFFF8C00) :
+                                        Colors.black54,
+
                                         letterSpacing: isActive ? 0.3 : 0,
-                                        fontFamily: 'Poppins'
+                                        fontFamily: 'Poppins',
                                       ),
                                       child: Text(item.label),
                                     ),
@@ -644,4 +570,11 @@ class _PremiumBottomNavBar extends StatelessWidget {
       ),
     );
   }
+}
+
+double getScaleFactor(bool isActive, int i) {
+  if (i == 2) {
+    return isActive ? 1.50 : 1.30;
+  }
+  return isActive ? 1.25 : 1.0;
 }

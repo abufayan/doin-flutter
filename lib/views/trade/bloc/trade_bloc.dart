@@ -16,6 +16,7 @@ import 'trade_event.dart';
 import 'trade_state.dart';
 
 class TradeBloc extends Bloc<TradeEvent, TradeState> {
+  String? _persistentError;
   final MarketPriceService _priceService = getIt<MarketPriceService>();
 
   late final StreamSubscription _priceSub;
@@ -53,10 +54,23 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
 
   Future<void> _onStarted(TradeStarted event, Emitter<TradeState> emit) async {
     _symbol = event.symbol;
-    _lot = 0.01;
+    _persistentError = null;
 
+    final cleanSymbol = _symbol.replaceAll('/', '').trim();
+
+    if (cleanSymbol == 'ETHUSD') {
+      _lot = 0.1;
+    } else {
+      _lot = 0.01;
+    }
+
+    // 🔥 Emit immediately so popup gets correct lot
+    emit(_buildQuoteState());
+
+    // Then load orders async
     _orders = await _loadOpenTrades();
 
+    // Emit again after orders load
     emit(_buildQuoteState());
   }
 
@@ -84,8 +98,30 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
 
   /* ---------------- LOT CHANGE ---------------- */
 
+  //Origianal version if new version creates issues then use this
+  // void _onLotChanged(TradeLotChanged event, Emitter<TradeState> emit) {
+  //   if (event.lot == null) return;
+
+  //   final isEth = _symbol.contains('ETH');
+  //   final minLot = isEth ? 0.10 : 0.01;
+
+  //   final sanitized = event.lot!.isFinite ? event.lot! : minLot;
+
+  //   _lot = sanitized.clamp(minLot, double.infinity);
+
+  //   emit(_buildQuoteState());
+  // }
+
   void _onLotChanged(TradeLotChanged event, Emitter<TradeState> emit) {
-    _lot = event.lot ?? 0;
+    final isEth = _symbol.contains('ETH');
+    final minLot = isEth ? 0.10 : 0.01;
+
+    if (event.lot == null) {
+      _lot = 0.0; // allow empty/invalid
+    } else {
+      _lot = event.lot!; // allow raw value (even 0)
+    }
+
     emit(_buildQuoteState());
   }
 
@@ -101,7 +137,7 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
 
   /* ---------------- PNL CALC ---------------- */
 
-  double _calculatePnl({required TradeOrder order, required PriceTick tick}) { 
+  double _calculatePnl({required TradeOrder order, required PriceTick tick}) {
     final entry = double.parse(order.entryPrice);
     final lot = double.parse(order.lotSize);
 
@@ -109,11 +145,16 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
 
     final isGold = cleanSymbol == 'XAUUSD';
     final isSilver = cleanSymbol == 'XAGUSD';
+    final isCrypto = (cleanSymbol == 'BTCUSD' || cleanSymbol == 'ETHUSD');
+    // final isCrypto = cleanSymbol.length > 6;
 
     double contractSize = isGold ? 100 : 100000;
 
-      if(isSilver) {
+    if (isSilver) {
       contractSize = 5000;
+    }
+    if (isCrypto) {
+      contractSize = 1;
     }
 
     // 🔥 Correct cmp
@@ -128,7 +169,7 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
       quote = cleanSymbol.substring(cleanSymbol.length - 3);
     }
 
-    if (quote != null && quote != "USD") { 
+    if (quote != null && quote != "USD") {
       final direct = _priceService.latestTicks["USD$quote"];
       final inverse = _priceService.latestTicks["${quote}USD"];
 
@@ -144,7 +185,7 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
 
   /* ---------------- STATE BUILDER ---------------- */
 
-  TradeQuoteState _buildQuoteState() { 
+  TradeQuoteState _buildQuoteState() {
     final account = getIt<MyAccountService>();
 
     final balance = account.wallet ?? 0.0;
@@ -160,15 +201,19 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
 
     final isGold = cleanSymbol == 'XAUUSD';
     final isSilver = cleanSymbol == 'XAGUSD';
+    final isCrypto = (cleanSymbol == 'BTCUSD' || cleanSymbol == 'ETHUSD');
 
     double contractSize = isGold ? 100 : 100000;
-    if(isSilver) {
+    if (isSilver) {
       contractSize = 5000;
+    }
+    if (isCrypto) {
+      contractSize = 1;
     }
 
     final price = tick.last; // use ask for preview
 
-    double marginQuote = (_lot * contractSize * price) / leverage; 
+    double marginQuote = (_lot * contractSize * price) / leverage;
 
     String? quote;
     if (cleanSymbol.length >= 6) {
@@ -209,12 +254,17 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
       lot: _lot,
       requiredMargin: requiredMargin,
       freeMargin: freeMargin,
+      errorMessage: _persistentError, // 🔥 use persistent error
     );
   }
 
   Future<void> _onBuy(TradeBuyPressed event, Emitter<TradeState> emit) async {
     if (state is TradeQuoteState) {
-      emit((state as TradeQuoteState).copyWith(isSubmitting: true));
+      if (state is TradeQuoteState) {
+        _persistentError = null;
+
+        emit((state as TradeQuoteState).copyWith(isSubmitting: true, errorMessage: null));
+      }
     }
 
     try {
@@ -240,7 +290,8 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
 
       final res = await dio.post(url, data: data);
 
-      _lot = 0.01;
+      final symbol = _symbol.replaceAll('/', '').trim();
+      _lot = symbol == 'ETHUSD' ? 0.10 : 0.01;
 
       await WalletService.updateAccountService();
 
@@ -248,14 +299,17 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
 
       emit(_buildQuoteState());
     } on DioException catch (e) {
-      emit(TradeFailure(e.response?.data['message'] ?? 'Buy failed'));
+      final msg = e.response?.data['message'] ?? 'Buy failed';
+      _persistentError = msg;
       emit(_buildQuoteState());
     }
   }
 
   Future<void> _onSell(TradeSellPressed event, Emitter<TradeState> emit) async {
     if (state is TradeQuoteState) {
-      emit((state as TradeQuoteState).copyWith(isSubmitting: true));
+      _persistentError = null;
+
+      emit((state as TradeQuoteState).copyWith(isSubmitting: true, errorMessage: null));
     }
 
     try {
@@ -281,7 +335,8 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
 
       final res = await dio.post(url, data: data);
 
-      _lot = 0.01;
+      final symbol = _symbol.replaceAll('/', '').trim();
+      _lot = symbol == 'ETHUSD' ? 0.10 : 0.01;
 
       await WalletService.updateAccountService();
 
@@ -289,7 +344,8 @@ class TradeBloc extends Bloc<TradeEvent, TradeState> {
 
       emit(_buildQuoteState());
     } on DioException catch (e) {
-      emit(TradeFailure(e.response?.data['message'] ?? 'Sell failed'));
+      final msg = e.response?.data['message'] ?? 'Sell failed';
+      _persistentError = msg;
       emit(_buildQuoteState());
     }
   }

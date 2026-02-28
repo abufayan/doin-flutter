@@ -18,6 +18,18 @@ class ResetPasswordScreen extends StatefulWidget {
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
 
+  bool get _hasValidLength =>
+      _password.length >= 8 && _password.length <= 15;
+
+  bool get _hasUpperAndLower =>
+      RegExp(r'(?=.*[a-z])(?=.*[A-Z])').hasMatch(_password);
+
+  bool get _hasNumber =>
+      RegExp(r'(?=.*\d)').hasMatch(_password);
+
+  bool get _hasSpecialChar =>
+      RegExp(r'(?=.*[!@#$%^&*(),.?":{}|<>])').hasMatch(_password);
+
   String _password = '';
   String _confirmPassword = '';
   String _otp = '';
@@ -172,7 +184,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     const SizedBox(height: 6),
                     TextFormField(
                       obscureText: obscure,
-                      onChanged: (v) => _password = v,
+                      onChanged: (v) {
+                        setState(() {
+                          _password = v;
+                        });
+                      },
                       validator: _passwordValidator,
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(
@@ -190,12 +206,22 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     ),
 
                     const SizedBox(height: 8),
-                    const _PasswordRule('8 to 15 characters'),
-                    const _PasswordRule(
-                      'At least 1 upper and 1 lower case letter',
+                    _PasswordRule(
+                      text: '8 to 15 characters',
+                      isValid: _hasValidLength,
                     ),
-                    const _PasswordRule('At least 1 number'),
-                    const _PasswordRule('At least 1 special character'),
+                    _PasswordRule(
+                      text: 'At least 1 upper and 1 lower case letter',
+                      isValid: _hasUpperAndLower,
+                    ),
+                    _PasswordRule(
+                      text: 'At least 1 number',
+                      isValid: _hasNumber,
+                    ),
+                    _PasswordRule(
+                      text: 'At least 1 special character',
+                      isValid: _hasSpecialChar,
+                    ),
 
                     const SizedBox(height: 30),
 
@@ -317,17 +343,34 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 /// 🔹 Password rule UI
 class _PasswordRule extends StatelessWidget {
   final String text;
-  const _PasswordRule(this.text);
+  final bool isValid;
+
+  const _PasswordRule({
+    required this.text,
+    required this.isValid,
+  });
 
   @override
   Widget build(BuildContext context) {
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
-          const Icon(Icons.check_circle_outline, size: 14, color: Colors.grey),
+          Icon(
+            isValid ? Icons.check_circle : Icons.check_circle_outline,
+            size: 16,
+            color: isValid ? Colors.green : Colors.grey,
+          ),
           const SizedBox(width: 6),
-          Text(text, style: const TextStyle(fontSize: 12)),
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 12,
+              color: isValid ? Colors.green : Colors.grey,
+              fontWeight: isValid ? FontWeight.w500 : FontWeight.normal,
+            ),
+          ),
         ],
       ),
     );

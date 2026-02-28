@@ -21,8 +21,7 @@ class PendingDetailScreen extends StatefulWidget {
   State<PendingDetailScreen> createState() => _PendingDetailScreenState();
 }
 
-class _PendingDetailScreenState extends State<PendingDetailScreen>
-    with SingleTickerProviderStateMixin {
+class _PendingDetailScreenState extends State<PendingDetailScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   double? takeProfit;
@@ -33,13 +32,9 @@ class _PendingDetailScreenState extends State<PendingDetailScreen>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
 
-    takeProfit = widget.order.takeProfit != null
-        ? double.tryParse(widget.order.takeProfit!)
-        : null;
+    takeProfit = widget.order.takeProfit != null ? double.tryParse(widget.order.takeProfit!) : null;
 
-    stopLoss = widget.order.stopLoss != null
-        ? double.tryParse(widget.order.stopLoss!)
-        : null;
+    stopLoss = widget.order.stopLoss != null ? double.tryParse(widget.order.stopLoss!) : null;
   }
 
   @override
@@ -53,10 +48,7 @@ class _PendingDetailScreenState extends State<PendingDetailScreen>
             _symbolHeader(),
             _tabBar(),
             Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [_infoTab(), _editTab()],
-              ),
+              child: TabBarView(controller: _tabController, children: [_infoTab(), _editTab()]),
             ),
           ],
         ),
@@ -77,18 +69,10 @@ class _PendingDetailScreenState extends State<PendingDetailScreen>
           const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.green.shade100,
-              borderRadius: BorderRadius.circular(20),
-            ),
+            decoration: BoxDecoration(color: Colors.green.shade100, borderRadius: BorderRadius.circular(20)),
             child: Text(
-              getIt<MyAccountService>().accountType == AccountType.live
-                  ? 'REAL'
-                  : 'DEMO',
-              style: const TextStyle(
-                color: Colors.green,
-                fontWeight: FontWeight.w600,
-              ),
+              getIt<MyAccountService>().accountType == AccountType.live ? 'REAL' : 'DEMO',
+              style: const TextStyle(color: Colors.green, fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -102,29 +86,17 @@ class _PendingDetailScreenState extends State<PendingDetailScreen>
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
-          ),
+          IconButton(icon: Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
           SizedBox(width: 8),
           buildSymbolIcon(widget.order.symbol, size: 35),
           SizedBox(width: 8),
-          Text(
-            widget.order.symbol.toUpperCase(),
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
+          Text(widget.order.symbol.toUpperCase(), style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           Spacer(),
           Text(
             'Limit Price  > ',
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w600,
-            ),
+            style: TextStyle(color: Colors.grey[600], fontWeight: FontWeight.w600),
           ),
-          Text(
-            ' ${widget.order.entryPrice}',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
+          Text(' ${widget.order.entryPrice}', style: TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -158,7 +130,7 @@ class _PendingDetailScreenState extends State<PendingDetailScreen>
           context.read<PendingOrderBloc>().add(LoadPendingOrders());
         }
         if (state is UpdateTradeError) {
-          showSnackbar(context, state.message, success: true);
+          showSnackbar(context, state.message, success: false);
         }
       },
       builder: (context, state) {
@@ -172,31 +144,16 @@ class _PendingDetailScreenState extends State<PendingDetailScreen>
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              _infoRow(
-                'Created Time',
-                DateFormat(
-                  'dd/MM/yyyy, HH:mm:ss',
-                ).format(order.entryTime.toUtc()),
-              ),
+              _infoRow('Created Time', DateFormat('dd/MM/yyyy, HH:mm:ss').format(order.entryTime.toUtc())),
               // _infoRow(
               //   'PNL',
               //   '${order.pnl >= 0 ? '+' : '-'}\$${order.pnl.abs().toStringAsFixed(2)}',
               //   valueColor: order.pnl >= 0 ? Colors.green : Colors.red,
               // ),
               _infoRow('Position ID', '${order.tradeId}'),
-              _infoRow(
-                'Order',
-                order.type,
-                valueColor: order.type == 'BUY' ? Colors.green : Colors.red,
-              ),
-              _infoRow(
-                'Limit Price',
-                double.parse(order.entryPrice).toStringAsFixed(2),
-              ),
-              _infoRow(
-                'Lot Size',
-                double.parse(order.lotSize).toStringAsPrecision(1),
-              ),
+              _infoRow('Order', order.type, valueColor: order.type == 'BUY' ? Colors.green : Colors.red),
+              _infoRow('Limit Price', double.parse(order.entryPrice).toStringAsFixed(2)),
+              _infoRow('Lot Size', double.parse(order.lotSize).toStringAsPrecision(1)),
               // _infoRow('Swap Fee', '\$ ${order.swap}'),
 
               // _infoRow('Leverage', '${order.leverage}'),
@@ -207,14 +164,10 @@ class _PendingDetailScreenState extends State<PendingDetailScreen>
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                   ),
                   onPressed: () {
-                    context.read<DetailPendingBloc>().add(
-                      CloseTrade(tradeId: widget.order.tradeId.toString()),
-                    );
+                    context.read<DetailPendingBloc>().add(CloseTrade(tradeId: widget.order.tradeId.toString()));
                   },
                   child: Text('Close', style: TextStyle(color: Colors.white)),
                 ),
@@ -226,22 +179,14 @@ class _PendingDetailScreenState extends State<PendingDetailScreen>
     );
   }
 
-  Widget _infoRow(
-    String label,
-    String value, {
-    Color valueColor = Colors.black,
-  }) {
+  Widget _infoRow(String label, String value, {Color valueColor = Colors.black}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         children: [
           Text(
             label,
-            style: TextStyle(
-              color: Colors.grey[800],
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(color: Colors.grey[800], fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const Spacer(),
           Text(
@@ -255,22 +200,37 @@ class _PendingDetailScreenState extends State<PendingDetailScreen>
 
   // -------------------- EDIT TAB --------------------
 
-  String formatPrice(double v, String symbol) {
-    final normalized = symbol.replaceAll('/', '');
+  // String formatPrice(double v, String symbol) {
+  //   final normalized = symbol.replaceAll('/', '');
 
-    if (normalized == 'XAUUSD') return v.toStringAsFixed(2);
-    if (normalized.endsWith('JPY')) return v.toStringAsFixed(3);
-    return v.toStringAsFixed(5);
-  }
+  //   if (normalized == 'XAUUSD') return v.toStringAsFixed(2);
+  //   if (normalized.endsWith('JPY')) return v.toStringAsFixed(3);
+  //   return v.toStringAsFixed(5);
+  // }
 
   Widget _editTab() {
     return BlocConsumer<DetailPendingBloc, DetailPendingState>(
       listener: (BuildContext context, DetailPendingState state) {
         if (state is UpdateTradeSuccess) {
+          context.read<PendingOrderBloc>().add(LoadPendingOrders());
           showSnackbar(context, state.message, success: true);
         }
         if (state is UpdateTradeError) {
           showSnackbar(context, state.message, success: false);
+        }
+        if (state is RemoveTpSlSuccess) {
+          context.read<PendingOrderBloc>().add(LoadPendingOrders());
+          showSnackbar(context, state.message, success: true);
+          if (state.removedTp) {
+            takeProfit = null;
+            // originalTakeProfit = null;
+          }
+          if (state.removedSl) {
+            stopLoss = null;
+            // originalStopLoss = null;
+          }
+          setState(() {});
+          // context.read<OpenOrdersBloc>().add(LoadOpenOrders());
         }
       },
       builder: (context, state) {
@@ -278,16 +238,44 @@ class _PendingDetailScreenState extends State<PendingDetailScreen>
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              _stepperField(
-                label: 'Take Profit',
-                value: takeProfit,
-                onChanged: (v) => setState(() => takeProfit = v),
+              Row(
+                children: [
+                  Expanded(
+                    child: _stepperField(
+                      label: 'Take Profit',
+                      value: takeProfit,
+                      onChanged: (v) => setState(() => takeProfit = v),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      context.read<DetailPendingBloc>().add(
+                        RemoveTpSl(tradeId: widget.order.tradeId.toString(), removeTp: true),
+                      );
+                    },
+                    icon: Icon(Icons.delete),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
-              _stepperField(
-                label: 'Stop Loss',
-                value: stopLoss,
-                onChanged: (v) => setState(() => stopLoss = v),
+              Row(
+                children: [
+                  Expanded(
+                    child: _stepperField(
+                      label: 'Stop Loss',
+                      value: stopLoss,
+                      onChanged: (v) => setState(() => stopLoss = v),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      context.read<DetailPendingBloc>().add(
+                        RemoveTpSl(tradeId: widget.order.tradeId.toString(), removeSl: true),
+                      );
+                    },
+                    icon: Icon(Icons.delete),
+                  ),
+                ],
               ),
               const Spacer(),
               Row(
@@ -313,9 +301,7 @@ class _PendingDetailScreenState extends State<PendingDetailScreen>
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.orange,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6),
-                          ),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                         ),
                         onPressed: () {
                           context.read<DetailPendingBloc>().add(
@@ -326,10 +312,7 @@ class _PendingDetailScreenState extends State<PendingDetailScreen>
                             ),
                           );
                         },
-                        child: Text(
-                          'Confirm',
-                          style: TextStyle(color: Colors.white),
-                        ),
+                        child: Text('Confirm', style: TextStyle(color: Colors.white)),
                       ),
                     ),
                   ),
@@ -342,17 +325,13 @@ class _PendingDetailScreenState extends State<PendingDetailScreen>
     );
   }
 
-  Widget _stepperField({
-    required String label,
-    required double? value,
-    required ValueChanged<double?> onChanged,
-  }) {
+  Widget _stepperField({required String label, required double? value, required ValueChanged<double?> onChanged}) {
     return _PendingStepperFieldWidget(
       label: label,
       value: value,
       onChanged: onChanged,
       symbol: widget.order.symbol,
-      formatPrice: formatPrice,
+      // formatPrice: formatPrice,
     );
   }
 }
@@ -363,45 +342,53 @@ class _PendingStepperFieldWidget extends StatefulWidget {
   final double? value;
   final ValueChanged<double?> onChanged;
   final String symbol;
-  final String Function(double, String) formatPrice;
+  final String Function(double, String)? formatPrice;
 
   const _PendingStepperFieldWidget({
     required this.label,
     required this.value,
     required this.onChanged,
     required this.symbol,
-    required this.formatPrice,
+    this.formatPrice,
   });
 
   @override
-  State<_PendingStepperFieldWidget> createState() =>
-      _PendingStepperFieldWidgetState();
+  State<_PendingStepperFieldWidget> createState() => _PendingStepperFieldWidgetState();
 }
 
-class _PendingStepperFieldWidgetState
-    extends State<_PendingStepperFieldWidget> {
+class _PendingStepperFieldWidgetState extends State<_PendingStepperFieldWidget> {
   late TextEditingController _controller;
   late FocusNode _focusNode;
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(
-      text: widget.value == null
-          ? ''
-          : widget.formatPrice(widget.value!, widget.symbol),
-    );
+    // _controller = TextEditingController(
+    //   text: widget.value == null ? '' : widget.formatPrice(widget.value!, widget.symbol),
+    // );
+    _controller = TextEditingController(text: widget.value?.toString() ?? '');
     _focusNode = FocusNode();
   }
 
   @override
-  void didUpdateWidget(_PendingStepperFieldWidget oldWidget) {
+  void didUpdateWidget(covariant _PendingStepperFieldWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Only update text if field is not focused (user not currently typing)
-    if (oldWidget.value != widget.value && !_focusNode.hasFocus) {
-      _controller.text = widget.value == null
-          ? ''
-          : widget.formatPrice(widget.value!, widget.symbol);
+
+    if (oldWidget.value != widget.value) {
+      // 🔥 If value is removed → ALWAYS clear
+      if (widget.value == null) {
+        _controller.clear();
+        return;
+      }
+
+      // 🔥 Only block formatting while actively typing
+      if (_focusNode.hasFocus) return;
+
+      final newText = widget.value!.toString();
+
+      if (_controller.text == newText) return;
+
+      _controller.text = newText;
     }
   }
 
@@ -432,7 +419,8 @@ class _PendingStepperFieldWidgetState
                 onPressed: widget.value == null
                     ? null
                     : () {
-                        final newValue = widget.value! - 0.01;
+                        final newValue = double.parse((widget.value! - 0.01).toStringAsFixed(5));
+
                         if (newValue >= 0.1) {
                           widget.onChanged(newValue);
                         }
@@ -443,13 +431,8 @@ class _PendingStepperFieldWidgetState
                   controller: _controller,
                   focusNode: _focusNode,
                   textAlign: TextAlign.center,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.zero,
-                  ),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(border: InputBorder.none, contentPadding: EdgeInsets.zero),
                   onChanged: (text) {
                     if (text.trim().isEmpty) {
                       widget.onChanged(null);
@@ -461,6 +444,9 @@ class _PendingStepperFieldWidgetState
                       widget.onChanged(parsed);
                     }
                   },
+                  onEditingComplete: () {
+                    FocusScope.of(context).unfocus();
+                  },
                 ),
               ),
               IconButton(
@@ -468,8 +454,7 @@ class _PendingStepperFieldWidgetState
                 onPressed: widget.value == null
                     ? null
                     : () {
-                        final newValue = widget.value! + 0.01;
-                        widget.onChanged(newValue);
+                        widget.onChanged(double.parse((widget.value! + 0.01).toStringAsFixed(5)));
                       },
               ),
             ],
